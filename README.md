@@ -22,7 +22,7 @@ This project will:
 - Map: AWS Location Service or similar
 
 ## Status
-Planning / Phase 0
+Phase 1 - Backend API (local development)
 
 ## Notes
 This is a learning project focused on:
