@@ -15,14 +15,16 @@ This project will:
 - Discord bot integration
 - Built and hosted in AWS
 
-## Tech Direction (Initial)
-- Backend: AWS Lambda + API Gateway + DynamoDB
-- Frontend: TBD (likely React)
-- Bot: Discord bot (Node.js)
-- Map: AWS Location Service or similar
+## Tech Stack
+- **Frontend:** SvelteKit + TypeScript (Cloudflare Pages)
+- **API:** AWS Lambda + API Gateway
+- **Database:** PostgreSQL on AWS RDS
+- **Map:** Mapbox GL JS
+- **Calendar:** FullCalendar
+- **Bot:** Discord slash commands (calls same API)
 
 ## Status
-Phase 1 - Backend API (local development)
+Phase 1 — Database Schema Design
 
 ## Notes
 This is a learning project focused on:
