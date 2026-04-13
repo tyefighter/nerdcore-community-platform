@@ -18,13 +18,16 @@
 - [x] Insert sample artist and event records for testing
 
 ## Phase 2 — AWS Infrastructure
-- [ ] Decide: new RDS instance or connect to existing VPC bot RDS
-- [ ] Create/configure RDS PostgreSQL instance
+- [x] Decide: new RDS instance (brand new AWS account, full free tier)
+- [x] Create/configure RDS PostgreSQL instance (nerdcore-community-db, us-east-1)
+- [x] Store DB credentials in Secrets Manager (nerdcore/db/credentials)
+- [x] Create security groups (nerdcore-db-sg, nerdcore-lambda-sg)
+- [x] Lock down RDS to only accept connections from nerdcore-lambda-sg
+- [ ] Create IAM role for Lambda (allow Secrets Manager access)
 - [ ] Create Lambda function for artists
 - [ ] Create Lambda function for events
 - [ ] Create Lambda function for submissions
 - [ ] Set up API Gateway routes
-- [ ] Configure IAM roles (least privilege)
 - [ ] Test endpoints from browser / curl
 
 ## Phase 3 — Backend API
