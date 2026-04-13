@@ -8,14 +8,14 @@
 - [x] Build Express API sandbox (local reference — see backend/)
 
 ## Phase 1 — Database Schema
-- [ ] Install PostgreSQL locally for development
-- [ ] Write schema: artists table
-- [ ] Write schema: events table
-- [ ] Write schema: submissions table (moderation queue)
-- [ ] Write schema: regions lookup table
-- [ ] Write schema: tags lookup table
-- [ ] Apply schema to local database
-- [ ] Insert sample artist and event records for testing
+- [x] Install PostgreSQL locally for development
+- [x] Write schema: artists table
+- [x] Write schema: events table
+- [x] Write schema: submissions table (moderation queue)
+- [x] Write schema: regions lookup table
+- [x] Write schema: tags lookup table
+- [x] Apply schema to local database
+- [x] Insert sample artist and event records for testing
 
 ## Phase 2 — AWS Infrastructure
 - [ ] Decide: new RDS instance or connect to existing VPC bot RDS
