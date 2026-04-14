@@ -96,12 +96,15 @@ Only `approved` records are returned by public API endpoints.
 
 ## API Endpoints (planned)
 
+### Base URL
+```
+https://kn2md859wl.execute-api.us-east-1.amazonaws.com
+```
+
 ### Public
 ```
 GET  /artists                  List approved artists (filters: state, region, role)
-GET  /artists/:id              Single artist
 GET  /events                   List approved events (filters: state, month, tag)
-GET  /events/:id               Single event
 POST /submissions/artist       Submit an artist (goes to pending queue)
 POST /submissions/event        Submit an event (goes to pending queue)
 ```

@@ -28,8 +28,8 @@
 - [x] Create Lambda function for events (nerdcore-get-events)
 - [x] Create Lambda function for submissions (nerdcore-submit-artist, nerdcore-submit-event)
 - [x] Apply schema and seed data to RDS
-- [ ] Set up API Gateway routes
-- [ ] Test endpoints from browser / curl
+- [x] Set up API Gateway (nerdcore-community-api)
+- [x] Test endpoints from browser / curl
 
 ## Phase 3 — Backend API
 - [ ] GET /artists (filters: state, region, role)
