@@ -23,10 +23,11 @@
 - [x] Store DB credentials in Secrets Manager (nerdcore/db/credentials)
 - [x] Create security groups (nerdcore-db-sg, nerdcore-lambda-sg)
 - [x] Lock down RDS to only accept connections from nerdcore-lambda-sg
-- [ ] Create IAM role for Lambda (allow Secrets Manager access)
-- [ ] Create Lambda function for artists
-- [ ] Create Lambda function for events
-- [ ] Create Lambda function for submissions
+- [x] Create IAM role for Lambda (nerdcore-lambda-role)
+- [x] Create Lambda function for artists (nerdcore-get-artists)
+- [x] Create Lambda function for events (nerdcore-get-events)
+- [x] Create Lambda function for submissions (nerdcore-submit-artist, nerdcore-submit-event)
+- [x] Apply schema and seed data to RDS
 - [ ] Set up API Gateway routes
 - [ ] Test endpoints from browser / curl
 
