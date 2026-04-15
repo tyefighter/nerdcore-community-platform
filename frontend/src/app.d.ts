@@ -1,5 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
+declare const mapboxgl: typeof import('mapbox-gl');
+
 declare global {
 	namespace App {
 		// interface Error {}

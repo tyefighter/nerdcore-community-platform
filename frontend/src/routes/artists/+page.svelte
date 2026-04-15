@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import mapboxgl from 'mapbox-gl';
-	import 'mapbox-gl/dist/mapbox-gl.css';
+	// mapbox-gl loaded via CDN in app.html to avoid import.meta bundling issues
 	import { PUBLIC_MAPBOX_TOKEN, PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	interface Artist {
