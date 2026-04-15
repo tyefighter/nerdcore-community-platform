@@ -94,7 +94,7 @@
 
 <div class="page">
 	<header>
-		<h1>Nerdcore Events</h1>
+		<h1>Nerd Music Events</h1>
 		<div class="legend">
 			<span class="dot" style="background:#39ff14"></span> Show
 			<span class="dot" style="background:#ff006e"></span> Festival

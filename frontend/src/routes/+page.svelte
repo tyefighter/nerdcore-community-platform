@@ -2,8 +2,8 @@
 </script>
 
 <div class="home">
-	<h1>Nerdcore Community</h1>
-	<p>A directory of nerdcore artists and events across the country.</p>
+	<h1>Nerd Music Community</h1>
+	<p>A directory of nerd music artists and events across the country.</p>
 	<nav>
 		<a href="/artists">Artist Map</a>
 		<a href="/events">Event Calendar</a>
@@ -28,7 +28,7 @@
 
 	h1 {
 		font-size: 2rem;
-		color: #39ff14;
+		color: #983cba;
 		margin: 0;
 	}
 
