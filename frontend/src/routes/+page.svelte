@@ -7,6 +7,8 @@
 	<nav>
 		<a href="/artists">Artist Map</a>
 		<a href="/events">Event Calendar</a>
+		<a href="/submit/artist">Submit Artist</a>
+		<a href="/submit/event">Submit Event</a>
 	</nav>
 </div>
 

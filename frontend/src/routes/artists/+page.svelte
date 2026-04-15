@@ -121,6 +121,10 @@
 			<span class="dot producer"></span> Producer
 			<span class="dot both"></span> Both
 		</div>
+		<nav>
+			<a href="/submit/artist">+ Submit Artist</a>
+			<a href="/">Home</a>
+		</nav>
 	</header>
 
 	<div class="layout">
@@ -217,7 +221,21 @@
 		font-size: 0.75rem;
 		color: #aaa;
 		align-items: center;
+		flex: 1;
 	}
+
+	nav {
+		display: flex;
+		gap: 1.5rem;
+	}
+
+	nav a {
+		font-size: 0.8rem;
+		color: #888;
+		text-decoration: none;
+	}
+
+	nav a:hover { color: #fff; }
 
 	.layout {
 		display: flex;

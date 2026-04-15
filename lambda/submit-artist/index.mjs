@@ -42,7 +42,7 @@ export const handler = async (event) => {
     if (!body.display_name || !body.role) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: "display_name and role are required" })
       };
     }
@@ -52,7 +52,7 @@ export const handler = async (event) => {
     if (!validRoles.includes(body.role)) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: "role must be vocalist, producer, or both" })
       };
     }
@@ -112,7 +112,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 201,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: "Artist submission received. It will appear on the map after moderator review.",
         id: result.rows[0].id
@@ -124,7 +124,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error: "Failed to submit artist" })
     };
 

@@ -102,10 +102,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(result.rows)
     };
 
@@ -114,10 +111,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error: "Failed to fetch artists" })
     };
 

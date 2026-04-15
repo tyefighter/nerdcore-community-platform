@@ -41,7 +41,7 @@ export const handler = async (event) => {
     if (!body.title || !body.start_date) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ error: "title and start_date are required" })
       };
     }
@@ -98,7 +98,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 201,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: "Event submission received. It will appear on the calendar after moderator review.",
         id: result.rows[0].id
@@ -110,7 +110,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error: "Failed to submit event" })
     };
 
