@@ -6,5 +6,8 @@ export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	optimizeDeps: {
 		exclude: ['mapbox-gl']
+	},
+	ssr: {
+		noExternal: ['mapbox-gl']
 	}
 });
