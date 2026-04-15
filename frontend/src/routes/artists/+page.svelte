@@ -131,8 +131,6 @@
 		<div class="map-container" bind:this={mapContainer}></div>
 		{#if loading}
 			<p class="map-status">Loading artists...</p>
-		{:else if error}
-			<p class="map-status error">{error}</p>
 		{/if}
 
 		<!-- Artist list / detail panel -->
@@ -400,5 +398,51 @@
 
 	.map-container {
 		position: relative;
+	}
+
+	@media (max-width: 768px) {
+		header {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			padding: 0.75rem 1rem;
+		}
+
+		h1 {
+			font-size: 1rem;
+		}
+
+		.legend {
+			flex: none;
+			width: 100%;
+			font-size: 0.7rem;
+			gap: 0.75rem;
+		}
+
+		nav {
+			gap: 1rem;
+		}
+
+		.page {
+			height: auto;
+			min-height: 100vh;
+		}
+
+		.layout {
+			flex-direction: column;
+			overflow: visible;
+		}
+
+		.map-container {
+			height: 45vh;
+			flex: none;
+		}
+
+		.panel {
+			width: 100%;
+			border-left: none;
+			border-top: 1px solid #222;
+			max-height: none;
+			overflow-y: visible;
+		}
 	}
 </style>

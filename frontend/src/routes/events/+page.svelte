@@ -446,4 +446,60 @@
 	}
 
 	.error { color: #ff006e; }
+
+	@media (max-width: 768px) {
+		header {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			padding: 0.75rem 1rem;
+		}
+
+		h1 {
+			font-size: 1rem;
+		}
+
+		.legend {
+			flex: none;
+			width: 100%;
+			font-size: 0.7rem;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+
+		nav {
+			gap: 1rem;
+		}
+
+		.page {
+			height: auto;
+			min-height: 100vh;
+		}
+
+		.layout {
+			flex-direction: column;
+			overflow: visible;
+		}
+
+		.calendar-container {
+			min-height: 60vh;
+			overflow: visible;
+		}
+
+		.panel {
+			width: 100%;
+			border-left: none;
+			border-top: 1px solid #222;
+			max-height: none;
+			overflow-y: visible;
+		}
+
+		:global(.fc .fc-toolbar) {
+			flex-wrap: wrap !important;
+			gap: 0.5rem !important;
+		}
+
+		:global(.fc .fc-toolbar-title) {
+			font-size: 0.85rem !important;
+		}
+	}
 </style>
