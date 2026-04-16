@@ -9,8 +9,7 @@
 	];
 
 	const ALL_TAGS = [
-		'nerdcore', 'hip-hop', 'chiptune', 'producer', 'vocalist',
-		'duo', 'festival', 'local-show', 'vpc', 'online-event', 'deadline'
+		'nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'
 	];
 
 	// Step 1: lookup

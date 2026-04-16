@@ -13,7 +13,7 @@
 
 	const ROLES = ['vocalist', 'producer', 'both'];
 
-	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'battle-rap', 'lo-fi', 'comedy-rap', 'horrorcore'];
+	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'];
 
 	let display_name = $state('');
 	let role = $state('');

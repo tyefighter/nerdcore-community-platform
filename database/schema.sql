@@ -45,6 +45,8 @@ INSERT INTO tags (name) VALUES
     ('nerdcore'),
     ('hip-hop'),
     ('chiptune'),
+    ('vgm'),
+    ('visualist'),
     ('producer'),
     ('vocalist'),
     ('duo'),
@@ -156,7 +158,7 @@ CREATE TABLE IF NOT EXISTS event_performers (
 -- -------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS submissions (
     id              SERIAL PRIMARY KEY,
-    type            VARCHAR(10) NOT NULL CHECK (type IN ('artist', 'event')),
+    type            VARCHAR(10) NOT NULL CHECK (type IN ('artist', 'event', 'removal', 'edit')),
     source          VARCHAR(10) NOT NULL CHECK (source IN ('website', 'discord')),
     discord_user_id VARCHAR(50),               -- Discord snowflake ID if submitted via bot
     submitter_note  TEXT,                      -- anything the submitter wrote

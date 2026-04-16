@@ -44,13 +44,19 @@
 		return cityCoordinates[key] || null;
 	}
 
-	function getRoleColor(role: string): string {
-		switch (role) {
-			case 'vocalist': return '#39ff14';   // neon green
-			case 'producer': return '#ff006e';   // neon pink
-			case 'both':     return '#00f5ff';   // neon cyan
-			default:         return '#ffffff';
+	const GENRE_COLORS: Record<string, string> = {
+		'nerdcore':  '#39ff14',   // neon green
+		'vgm':       '#ff9900',   // orange
+		'chiptune':  '#00f5ff',   // cyan
+		'visualist': '#983cba',   // purple
+		'other':     '#888888',   // grey
+	};
+
+	function getGenreColor(tags: string[]): string {
+		for (const tag of tags) {
+			if (GENRE_COLORS[tag]) return GENRE_COLORS[tag];
 		}
+		return GENRE_COLORS['other'];
 	}
 
 	onMount(async () => {
@@ -84,16 +90,17 @@
 				if (!coords) return;
 
 				// Create a colored dot marker
+				const color = getGenreColor(artist.tags);
 				const el = document.createElement('div');
 				el.className = 'artist-marker';
 				el.style.cssText = `
 					width: 14px;
 					height: 14px;
 					border-radius: 50%;
-					background-color: ${getRoleColor(artist.role)};
+					background-color: ${color};
 					border: 2px solid white;
 					cursor: pointer;
-					box-shadow: 0 0 6px ${getRoleColor(artist.role)};
+					box-shadow: 0 0 6px ${color};
 				`;
 
 				new mapboxgl.Marker(el)
@@ -114,11 +121,13 @@
 
 <div class="page">
 	<header>
-		<h1>Nerdcore Artists</h1>
+		<h1>Nerd Music</h1>
 		<div class="legend">
-			<span class="dot vocalist"></span> Vocalist
-			<span class="dot producer"></span> Producer
-			<span class="dot both"></span> Both
+			<span class="dot nerdcore"></span> Nerdcore
+			<span class="dot vgm"></span> VGM
+			<span class="dot chiptune"></span> Chiptune
+			<span class="dot visualist"></span> Visualist
+			<span class="dot other"></span> Other
 		</div>
 		<nav>
 			<a href="/submit/artist">+ Submit Artist</a>
@@ -177,7 +186,7 @@
 					<ul class="artist-list">
 						{#each artists as artist}
 							<li onclick={() => selectedArtist = artist}>
-								<span class="dot" style="background:{getRoleColor(artist.role)}; box-shadow: 0 0 4px {getRoleColor(artist.role)}"></span>
+								<span class="dot" style="background:{getGenreColor(artist.tags)}; box-shadow: 0 0 4px {getGenreColor(artist.tags)}"></span>
 								<div>
 									<strong>{artist.display_name}</strong>
 									<small>{artist.city}, {artist.state}</small>
@@ -308,9 +317,11 @@
 		flex-shrink: 0;
 	}
 
-	.dot.vocalist { background: #39ff14; box-shadow: 0 0 4px #39ff14; }
-	.dot.producer { background: #ff006e; box-shadow: 0 0 4px #ff006e; }
-	.dot.both     { background: #00f5ff; box-shadow: 0 0 4px #00f5ff; }
+	.dot.nerdcore  { background: #39ff14; box-shadow: 0 0 4px #39ff14; }
+	.dot.vgm       { background: #ff9900; box-shadow: 0 0 4px #ff9900; }
+	.dot.chiptune  { background: #00f5ff; box-shadow: 0 0 4px #00f5ff; }
+	.dot.visualist { background: #983cba; box-shadow: 0 0 4px #983cba; }
+	.dot.other     { background: #888888; box-shadow: 0 0 4px #888888; }
 
 	.artist-detail h2 {
 		font-size: 1.1rem;

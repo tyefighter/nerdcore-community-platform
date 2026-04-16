@@ -10,6 +10,9 @@ node_modules/
 dist/
 build/
 
+# Lambda deployment zips - built locally, not source
+lambda/**/function.zip
+
 # OS junk
 .DS_Store
 Thumbs.db
