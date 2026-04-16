@@ -80,7 +80,7 @@
 		'vgm':       '#ff9900',   // orange
 		'chiptune':  '#00f5ff',   // cyan
 		'visualist': '#983cba',   // purple
-		'other':     '#888888',   // grey
+		'other':     '#ffe566',   // yellow
 	};
 
 	function getGenreColor(tags: string[]): string {
@@ -156,11 +156,11 @@
 	<header>
 		<h1>Nerd Music</h1>
 		<div class="legend">
-			<span class="dot nerdcore"></span> Nerdcore
-			<span class="dot vgm"></span> VGM
-			<span class="dot chiptune"></span> Chiptune
-			<span class="dot visualist"></span> Visualist
-			<span class="dot other"></span> Other
+			<span class="legend-item"><span class="dot nerdcore"></span>Nerdcore</span>
+			<span class="legend-item"><span class="dot vgm"></span>VGM</span>
+			<span class="legend-item"><span class="dot chiptune"></span>Chiptune</span>
+			<span class="legend-item"><span class="dot visualist"></span>Visualist</span>
+			<span class="legend-item"><span class="dot other"></span>Other</span>
 		</div>
 		<nav>
 			<a href="/events">Events</a>
@@ -283,7 +283,7 @@
 	h1 {
 		font-size: 1.25rem;
 		margin: 0;
-		color: #39ff14;
+		color: #983cba;
 	}
 
 	.legend {
@@ -445,7 +445,13 @@
 	.dot.vgm       { background: #ff9900; box-shadow: 0 0 4px #ff9900; }
 	.dot.chiptune  { background: #00f5ff; box-shadow: 0 0 4px #00f5ff; }
 	.dot.visualist { background: #983cba; box-shadow: 0 0 4px #983cba; }
-	.dot.other     { background: #888888; box-shadow: 0 0 4px #888888; }
+	.dot.other     { background: #ffe566; box-shadow: 0 0 4px #ffe566; }
+
+	.legend-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
 
 	.artist-detail h2 {
 		font-size: 1.1rem;
