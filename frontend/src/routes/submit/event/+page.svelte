@@ -250,7 +250,7 @@
 	header h1 {
 		font-size: 1.25rem;
 		margin: 0;
-		color: #39ff14;
+		color: #983cba;
 	}
 
 	nav {
@@ -282,7 +282,7 @@
 		margin: 0;
 		padding: 0.75rem 1rem;
 		border: 1px solid #222;
-		border-left: 3px solid #39ff14;
+		border-left: 3px solid #983cba;
 		border-radius: 3px;
 	}
 
@@ -334,7 +334,7 @@
 	input[type='time']:focus,
 	select:focus,
 	textarea:focus {
-		border-color: #39ff14;
+		border-color: #983cba;
 	}
 
 	input.short {
@@ -365,7 +365,7 @@
 	}
 
 	.checkbox-label input {
-		accent-color: #39ff14;
+		accent-color: #983cba;
 		width: 16px;
 		height: 16px;
 	}
@@ -411,14 +411,14 @@
 	}
 
 	.tag.active {
-		background: #0d2200;
-		border-color: #39ff14;
-		color: #39ff14;
+		background: #1e0f2e;
+		border-color: #983cba;
+		color: #983cba;
 	}
 
 	.submit-btn {
-		background: #39ff14;
-		color: #000;
+		background: #983cba;
+		color: #fff;
 		border: none;
 		border-radius: 4px;
 		font-family: inherit;
@@ -458,7 +458,7 @@
 
 	.success-icon {
 		font-size: 3rem;
-		color: #39ff14;
+		color: #983cba;
 		margin: 0;
 	}
 
@@ -487,7 +487,7 @@
 		border: none;
 		font-family: inherit;
 		font-size: 0.85rem;
-		color: #39ff14;
+		color: #983cba;
 		cursor: pointer;
 		padding: 0;
 	}
@@ -499,7 +499,7 @@
 
 	.success-actions a {
 		font-size: 0.85rem;
-		color: #39ff14;
+		color: #983cba;
 		text-decoration: none;
 	}
 </style>
