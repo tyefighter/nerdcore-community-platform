@@ -4,6 +4,7 @@
 	const FULL_TEXT = 'Nerd Music Unites!';
 	let displayed = $state('');
 	let typing = $state(true);
+	let subtitleVisible = $state(false);
 
 	onMount(() => {
 		let i = 0;
@@ -13,6 +14,7 @@
 			if (i >= FULL_TEXT.length) {
 				clearInterval(interval);
 				typing = false;
+				setTimeout(() => { subtitleVisible = true; }, 300);
 			}
 		}, 80);
 		return () => clearInterval(interval);
@@ -83,7 +85,7 @@
 
 	<div class="content">
 		<h1>{displayed}<span class="cursor" class:hidden={!typing}>▌</span></h1>
-		<p>A directory of nerd music artists and events across the country.</p>
+		<p class:visible={subtitleVisible}>A directory of nerd music artists and events across the country.</p>
 		<nav>
 			<a href="/artists">Artist Map</a>
 			<a href="/events">Event Calendar</a>
@@ -151,9 +153,15 @@
 	}
 
 	p {
-		color: #888;
+		color: #ffffff;
 		margin: 0;
 		font-size: 0.9rem;
+		opacity: 0;
+		transition: opacity 0.6s ease;
+	}
+
+	p.visible {
+		opacity: 1;
 	}
 
 	nav {
