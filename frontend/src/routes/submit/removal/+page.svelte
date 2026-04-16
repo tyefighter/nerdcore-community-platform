@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	let artistName = $state('');
@@ -6,6 +8,11 @@
 	let submitting = $state(false);
 	let submitted = $state(false);
 	let error = $state('');
+
+	onMount(() => {
+		const nameParam = $page.url.searchParams.get('name');
+		if (nameParam) artistName = nameParam;
+	});
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();

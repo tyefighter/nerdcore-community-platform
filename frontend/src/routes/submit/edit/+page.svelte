@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	const REGIONS = [
@@ -36,6 +38,24 @@
 	let submitting = $state(false);
 	let submitted = $state(false);
 	let error = $state('');
+	let loadingById = $state(false);
+
+	onMount(async () => {
+		const idParam = $page.url.searchParams.get('id');
+		if (!idParam) return;
+		loadingById = true;
+		try {
+			const res = await fetch(`${PUBLIC_API_BASE_URL}/artists`);
+			if (!res.ok) throw new Error();
+			const all = await res.json();
+			const found = all.find((a: any) => String(a.id) === idParam);
+			if (found) selectArtist(found);
+		} catch {
+			// fall through to manual search
+		} finally {
+			loadingById = false;
+		}
+	});
 
 	async function search(e: Event) {
 		e.preventDefault();
@@ -154,7 +174,9 @@
 		<p class="subtitle">Suggest a correction or update to an artist's listing.</p>
 	</header>
 
-	{#if submitted}
+	{#if loadingById}
+		<p class="loading">Loading artist...</p>
+	{:else if submitted}
 		<div class="success">
 			<p class="success-msg">Edit request received. A moderator will review it shortly.</p>
 			<div class="success-actions">
@@ -568,6 +590,14 @@
 	}
 
 	.success-actions a:hover { color: #aaa; }
+
+	.loading {
+		max-width: 600px;
+		margin: 3rem auto;
+		font-size: 0.8rem;
+		color: #555;
+		text-align: center;
+	}
 
 	@media (max-width: 600px) {
 		.field-row { grid-template-columns: 1fr; }

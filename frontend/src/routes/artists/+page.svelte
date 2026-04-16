@@ -167,6 +167,10 @@
 								<a href={selectedArtist.link_website} target="_blank">Website</a>
 							{/if}
 						</div>
+						<div class="mod-links">
+							<a href="/submit/edit?id={selectedArtist.id}">Request edit</a>
+							<a href="/submit/removal?name={encodeURIComponent(selectedArtist.display_name)}">Request removal</a>
+						</div>
 					</div>
 				{:else}
 					<h2>Artists ({artists.length})</h2>
@@ -365,6 +369,22 @@
 	.links a:hover {
 		text-decoration: underline;
 	}
+
+	.mod-links {
+		display: flex;
+		gap: 1rem;
+		margin-top: 1rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid #1e1e1e;
+	}
+
+	.mod-links a {
+		font-size: 0.7rem;
+		color: #444;
+		text-decoration: none;
+	}
+
+	.mod-links a:hover { color: #888; }
 
 	.back {
 		background: none;
