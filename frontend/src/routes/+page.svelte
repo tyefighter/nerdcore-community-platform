@@ -1,4 +1,22 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
+	const FULL_TEXT = 'Nerd Music Unites!';
+	let displayed = $state('');
+	let typing = $state(true);
+
+	onMount(() => {
+		let i = 0;
+		const interval = setInterval(() => {
+			i++;
+			displayed = FULL_TEXT.slice(0, i);
+			if (i >= FULL_TEXT.length) {
+				clearInterval(interval);
+				typing = false;
+			}
+		}, 80);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <div class="home">
@@ -64,7 +82,7 @@
 	</svg>
 
 	<div class="content">
-		<h1>Nerd Music Unites!</h1>
+		<h1>{displayed}<span class="cursor" class:hidden={!typing}>▌</span></h1>
 		<p>A directory of nerd music artists and events across the country.</p>
 		<nav>
 			<a href="/artists">Artist Map</a>
@@ -110,10 +128,26 @@
 	}
 
 	h1 {
-		font-size: 2.2rem;
-		color: #983cba;
+		font-family: 'Press Start 2P', monospace;
+		font-size: 1.6rem;
+		color: #ffffff;
 		margin: 0;
-		text-shadow: 0 0 30px rgba(152, 60, 186, 0.4);
+		line-height: 1.6;
+		text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+	}
+
+	.cursor {
+		animation: blink 0.7s step-end infinite;
+		color: #ffffff;
+	}
+
+	.cursor.hidden {
+		display: none;
+	}
+
+	@keyframes blink {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0; }
 	}
 
 	p {
@@ -145,7 +179,7 @@
 	}
 
 	@media (max-width: 600px) {
-		h1 { font-size: 1.5rem; }
+		h1 { font-size: 1rem; }
 		a { font-size: 0.8rem; padding: 0.4rem 1rem; }
 	}
 </style>
