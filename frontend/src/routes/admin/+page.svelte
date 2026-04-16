@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PUBLIC_API_BASE_URL } from '$env/static/public';
+	import { PUBLIC_API_BASE_URL, PUBLIC_ADMIN_KEY } from '$env/static/public';
 
 	interface ArtistSubmission {
 		id: number;
@@ -69,7 +69,9 @@
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch(`${PUBLIC_API_BASE_URL}/admin/submissions`);
+			const res = await fetch(`${PUBLIC_API_BASE_URL}/admin/submissions`, {
+				headers: { 'x-admin-key': PUBLIC_ADMIN_KEY }
+			});
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			const data = await res.json();
 			artists = data.artists;
@@ -88,7 +90,7 @@
 		try {
 			const res = await fetch(`${PUBLIC_API_BASE_URL}/admin/review`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: { 'Content-Type': 'application/json', 'x-admin-key': PUBLIC_ADMIN_KEY },
 				body: JSON.stringify({ type, id, action })
 			});
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);

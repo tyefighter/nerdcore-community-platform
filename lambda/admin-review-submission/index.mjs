@@ -4,6 +4,7 @@ import pg from "pg";
 const { Client } = pg;
 
 let cachedCredentials = null;
+let cachedAdminKey = null;
 
 async function getCredentials() {
   if (cachedCredentials) return cachedCredentials;
@@ -13,6 +14,16 @@ async function getCredentials() {
   );
   cachedCredentials = JSON.parse(response.SecretString);
   return cachedCredentials;
+}
+
+async function getAdminKey() {
+  if (cachedAdminKey) return cachedAdminKey;
+  const client = new SecretsManagerClient({ region: "us-east-1" });
+  const response = await client.send(
+    new GetSecretValueCommand({ SecretId: "nerdcore/admin/api-key" })
+  );
+  cachedAdminKey = JSON.parse(response.SecretString).admin_api_key;
+  return cachedAdminKey;
 }
 
 async function connectToDatabase(credentials) {
@@ -34,6 +45,17 @@ export const handler = async (event) => {
   let db = null;
 
   try {
+    // Validate admin API key
+    const adminKey = await getAdminKey();
+    const providedKey = event.headers?.["x-admin-key"] || event.headers?.["X-Admin-Key"];
+    if (!providedKey || providedKey !== adminKey) {
+      return {
+        statusCode: 401,
+        headers: HEADERS,
+        body: JSON.stringify({ error: "Unauthorized" })
+      };
+    }
+
     const body = JSON.parse(event.body || "{}");
     const { type, id, action } = body;
 
