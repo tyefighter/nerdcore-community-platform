@@ -206,19 +206,21 @@
 	}
 
 	:global(.fc .fc-button) {
-		background: #222 !important;
-		border-color: #444 !important;
-		color: #fff !important;
+		background: #1e0f2e !important;
+		border-color: #983cba !important;
+		color: #983cba !important;
+		font-family: 'JetBrains Mono', monospace !important;
 	}
 
 	:global(.fc .fc-button:hover) {
-		background: #333 !important;
+		background: #983cba !important;
+		color: #fff !important;
 	}
 
 	:global(.fc .fc-button-primary:not(:disabled).fc-button-active) {
-		background: #39ff14 !important;
-		border-color: #39ff14 !important;
-		color: #000 !important;
+		background: #983cba !important;
+		border-color: #983cba !important;
+		color: #fff !important;
 	}
 
 	:global(.fc .fc-toolbar-title) {
@@ -254,7 +256,7 @@
 	h1 {
 		font-size: 1.25rem;
 		margin: 0;
-		color: #39ff14;
+		color: #983cba;
 	}
 
 	.legend {
