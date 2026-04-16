@@ -24,6 +24,37 @@
 	let selectedArtist: Artist | null = $state(null);
 	let loading = $state(true);
 	let error = $state('');
+	let activeFilter: string | null = $state(null);
+	let filterOpen = $state(false);
+
+	const GENRES = ['Nerdcore', 'VGM', 'Chiptune', 'Visualist', 'Other'];
+
+	// Map marker elements keyed by artist id so we can show/hide them
+	const markerElements: Map<number, HTMLElement> = new Map();
+
+	let filteredArtists = $derived(
+		activeFilter
+			? artists.filter(a => {
+				const f = activeFilter!.toLowerCase();
+				if (f === 'other') {
+					return !a.tags.some(t => ['nerdcore','vgm','chiptune','visualist'].includes(t));
+				}
+				return a.tags.includes(f);
+			})
+			: artists
+	);
+
+	function setFilter(genre: string) {
+		activeFilter = activeFilter === genre.toLowerCase() ? null : genre.toLowerCase();
+		filterOpen = false;
+		// Show/hide markers to match filter
+		for (const [id, el] of markerElements) {
+			const artist = artists.find(a => a.id === id);
+			if (!artist) continue;
+			const visible = !activeFilter || filteredArtists.includes(artist);
+			el.style.display = visible ? 'block' : 'none';
+		}
+	}
 
 	// City coordinates for placing markers (approximate city centers)
 	const cityCoordinates: Record<string, [number, number]> = {
@@ -107,6 +138,8 @@
 					.setLngLat(coords)
 					.addTo(map);
 
+				markerElements.set(artist.id, el);
+
 				el.addEventListener('click', () => {
 					selectedArtist = artist;
 				});
@@ -182,9 +215,35 @@
 						</div>
 					</div>
 				{:else}
-					<h2>Artists ({artists.length})</h2>
+					<div class="panel-header">
+						<span>Artists ({filteredArtists.length})</span>
+						<div class="filter-wrap">
+							<button class="filter-btn" class:active={activeFilter} onclick={() => filterOpen = !filterOpen}>
+								{activeFilter ? activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1) : 'Filter'} ▾
+							</button>
+							{#if filterOpen}
+								<div class="filter-dropdown">
+									{#if activeFilter}
+										<button class="filter-option clear" onclick={() => setFilter(activeFilter!.charAt(0).toUpperCase() + activeFilter!.slice(1))}>
+											✕ Clear filter
+										</button>
+									{/if}
+									{#each GENRES as genre}
+										<button
+											class="filter-option"
+											class:selected={activeFilter === genre.toLowerCase()}
+											onclick={() => setFilter(genre)}
+										>
+											<span class="dot {genre.toLowerCase()}"></span>
+											{genre}
+										</button>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					</div>
 					<ul class="artist-list">
-						{#each artists as artist}
+						{#each filteredArtists as artist}
 							<li onclick={() => selectedArtist = artist}>
 								<span class="dot" style="background:{getGenreColor(artist.tags)}; box-shadow: 0 0 4px {getGenreColor(artist.tags)}"></span>
 								<div>
@@ -265,11 +324,74 @@
 		padding: 1rem;
 	}
 
-	.panel h2 {
+	.panel-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1rem;
 		font-size: 0.9rem;
 		color: #aaa;
-		margin: 0 0 1rem;
 	}
+
+	.filter-wrap {
+		position: relative;
+	}
+
+	.filter-btn {
+		background: #1a1a1a;
+		border: 1px solid #333;
+		color: #aaa;
+		font-family: inherit;
+		font-size: 0.72rem;
+		padding: 0.3rem 0.65rem;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.filter-btn:hover { border-color: #555; color: #fff; }
+
+	.filter-btn.active {
+		border-color: #983cba;
+		color: #983cba;
+	}
+
+	.filter-dropdown {
+		position: absolute;
+		right: 0;
+		top: calc(100% + 4px);
+		background: #1a1a1a;
+		border: 1px solid #333;
+		border-radius: 6px;
+		padding: 0.4rem;
+		z-index: 10;
+		min-width: 140px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+
+	.filter-option {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		background: none;
+		border: none;
+		color: #aaa;
+		font-family: inherit;
+		font-size: 0.8rem;
+		padding: 0.45rem 0.6rem;
+		border-radius: 4px;
+		cursor: pointer;
+		text-align: left;
+		width: 100%;
+	}
+
+	.filter-option:hover { background: #222; color: #fff; }
+
+	.filter-option.selected { color: #fff; background: #2a1a35; }
+
+	.filter-option.clear { color: #666; font-size: 0.72rem; }
+	.filter-option.clear:hover { color: #ff006e; background: none; }
 
 	.artist-list {
 		list-style: none;
