@@ -5,11 +5,13 @@
 	<svg class="wave-bg" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 		<defs>
 			<linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-				<stop offset="0%"   stop-color="#39ff14" />
-				<stop offset="25%"  stop-color="#00f5ff" />
-				<stop offset="50%"  stop-color="#983cba" />
-				<stop offset="75%"  stop-color="#ff9900" />
-				<stop offset="100%" stop-color="#ffe566" />
+				<stop offset="0%"    stop-color="#ff2200" />
+				<stop offset="17%"   stop-color="#ff8800" />
+				<stop offset="33%"   stop-color="#ffee00" />
+				<stop offset="50%"   stop-color="#39ff14" />
+				<stop offset="67%"   stop-color="#00aaff" />
+				<stop offset="83%"   stop-color="#6600cc" />
+				<stop offset="100%"  stop-color="#cc00ff" />
 			</linearGradient>
 		</defs>
 
@@ -62,7 +64,7 @@
 	</svg>
 
 	<div class="content">
-		<h1>Nerd Music Community</h1>
+		<h1>Nerd Music Unites!</h1>
 		<p>A directory of nerd music artists and events across the country.</p>
 		<nav>
 			<a href="/artists">Artist Map</a>
