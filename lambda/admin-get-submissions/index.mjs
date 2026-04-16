@@ -35,7 +35,7 @@ export const handler = async (event) => {
     const credentials = await getCredentials();
     db = await connectToDatabase(credentials);
 
-    // Get pending artists
+    // Pending artist submissions
     const artistsResult = await db.query(`
       SELECT
         a.id,
@@ -61,7 +61,7 @@ export const handler = async (event) => {
       ORDER BY a.id ASC
     `);
 
-    // Get pending events
+    // Pending event submissions
     const eventsResult = await db.query(`
       SELECT
         e.id,
@@ -88,12 +88,44 @@ export const handler = async (event) => {
       ORDER BY e.id ASC
     `);
 
+    // Pending removal requests
+    const removalsResult = await db.query(`
+      SELECT
+        s.id,
+        s.submitter_note AS reason,
+        s.submitted_at,
+        s.raw_data,
+        a.id AS artist_id,
+        a.display_name AS artist_name
+      FROM submissions s
+      LEFT JOIN artists a ON s.artist_id = a.id
+      WHERE s.type = 'removal' AND s.status = 'pending'
+      ORDER BY s.id ASC
+    `);
+
+    // Pending edit requests
+    const editsResult = await db.query(`
+      SELECT
+        s.id,
+        s.submitter_note AS reason,
+        s.submitted_at,
+        s.raw_data,
+        a.id AS artist_id,
+        a.display_name AS artist_name
+      FROM submissions s
+      LEFT JOIN artists a ON s.artist_id = a.id
+      WHERE s.type = 'edit' AND s.status = 'pending'
+      ORDER BY s.id ASC
+    `);
+
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         artists: artistsResult.rows,
-        events: eventsResult.rows
+        events: eventsResult.rows,
+        removals: removalsResult.rows,
+        edits: editsResult.rows
       })
     };
 

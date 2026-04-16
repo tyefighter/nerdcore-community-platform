@@ -9,6 +9,8 @@
 		<a href="/events">Event Calendar</a>
 		<a href="/submit/artist">Submit Artist</a>
 		<a href="/submit/event">Submit Event</a>
+		<a href="/submit/edit">Request Edit</a>
+		<a href="/submit/removal">Request Removal</a>
 	</nav>
 </div>
 

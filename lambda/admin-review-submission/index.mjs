@@ -28,6 +28,8 @@ async function connectToDatabase(credentials) {
   return client;
 }
 
+const HEADERS = { "Content-Type": "application/json" };
+
 export const handler = async (event) => {
   let db = null;
 
@@ -35,27 +37,26 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
     const { type, id, action } = body;
 
-    // Validate inputs
     if (!type || !id || !action) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: HEADERS,
         body: JSON.stringify({ error: "type, id, and action are required" })
       };
     }
 
-    if (!["artist", "event"].includes(type)) {
+    if (!["artist", "event", "removal", "edit"].includes(type)) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "type must be artist or event" })
+        headers: HEADERS,
+        body: JSON.stringify({ error: "type must be artist, event, removal, or edit" })
       };
     }
 
     if (!["approved", "rejected"].includes(action)) {
       return {
         statusCode: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: HEADERS,
         body: JSON.stringify({ error: "action must be approved or rejected" })
       };
     }
@@ -63,35 +64,144 @@ export const handler = async (event) => {
     const credentials = await getCredentials();
     db = await connectToDatabase(credentials);
 
-    const table = type === "artist" ? "artists" : "events";
-
-    const result = await db.query(
-      `UPDATE ${table} SET status = $1 WHERE id = $2 AND status = 'pending' RETURNING id`,
-      [action, id]
-    );
-
-    if (result.rows.length === 0) {
+    // --- Artist / Event: update the record's status ---
+    if (type === "artist" || type === "event") {
+      const table = type === "artist" ? "artists" : "events";
+      const result = await db.query(
+        `UPDATE ${table} SET status = $1, reviewed_at = NOW() WHERE id = $2 AND status = 'pending' RETURNING id`,
+        [action, id]
+      );
+      if (result.rows.length === 0) {
+        return {
+          statusCode: 404,
+          headers: HEADERS,
+          body: JSON.stringify({ error: "Submission not found or already reviewed" })
+        };
+      }
       return {
-        statusCode: 404,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "Submission not found or already reviewed" })
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({ message: `${type} ${action} successfully`, id: result.rows[0].id })
       };
     }
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: `${type} ${action} successfully`,
-        id: result.rows[0].id
-      })
-    };
+    // --- Removal: mark submission reviewed; if approved, hide the artist ---
+    if (type === "removal") {
+      const subResult = await db.query(
+        `UPDATE submissions SET status = $1, reviewed_at = NOW()
+         WHERE id = $2 AND type = 'removal' AND status = 'pending'
+         RETURNING id, artist_id`,
+        [action, id]
+      );
+      if (subResult.rows.length === 0) {
+        return {
+          statusCode: 404,
+          headers: HEADERS,
+          body: JSON.stringify({ error: "Removal request not found or already reviewed" })
+        };
+      }
+      if (action === "approved" && subResult.rows[0].artist_id) {
+        await db.query(
+          `UPDATE artists SET status = 'hidden', reviewed_at = NOW() WHERE id = $1`,
+          [subResult.rows[0].artist_id]
+        );
+      }
+      return {
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({ message: `Removal request ${action}`, id: subResult.rows[0].id })
+      };
+    }
+
+    // --- Edit: mark submission reviewed; if approved, apply changes to artist ---
+    if (type === "edit") {
+      const subResult = await db.query(
+        `UPDATE submissions SET status = $1, reviewed_at = NOW()
+         WHERE id = $2 AND type = 'edit' AND status = 'pending'
+         RETURNING id, artist_id, raw_data`,
+        [action, id]
+      );
+      if (subResult.rows.length === 0) {
+        return {
+          statusCode: 404,
+          headers: HEADERS,
+          body: JSON.stringify({ error: "Edit request not found or already reviewed" })
+        };
+      }
+
+      if (action === "approved" && subResult.rows[0].artist_id) {
+        const artistId = subResult.rows[0].artist_id;
+        const data = subResult.rows[0].raw_data;
+
+        // Build dynamic UPDATE for only the fields that were submitted
+        const fieldMap = {
+          display_name: "display_name",
+          role: "role",
+          city: "city",
+          state: "state",
+          bio: "bio",
+          operates_in: "operates_in",
+          link_soundcloud: "link_soundcloud",
+          link_bandcamp: "link_bandcamp",
+          link_twitter: "link_twitter",
+          link_instagram: "link_instagram",
+          link_website: "link_website",
+          discord_handle: "discord_handle"
+        };
+
+        const setClauses = [];
+        const values = [];
+        let idx = 1;
+
+        for (const [field, col] of Object.entries(fieldMap)) {
+          if (data[field] !== undefined) {
+            setClauses.push(`${col} = $${idx}`);
+            values.push(data[field]);
+            idx++;
+          }
+        }
+
+        if (setClauses.length > 0) {
+          setClauses.push(`reviewed_at = NOW()`);
+          values.push(artistId);
+          await db.query(
+            `UPDATE artists SET ${setClauses.join(", ")} WHERE id = $${idx}`,
+            values
+          );
+        }
+
+        // Update tags if included
+        if (Array.isArray(data.tags)) {
+          // Resolve tag names to IDs
+          const tagRows = await db.query(
+            `SELECT id FROM tags WHERE name = ANY($1)`,
+            [data.tags]
+          );
+          const tagIds = tagRows.rows.map(r => r.id);
+
+          // Replace all tags for this artist
+          await db.query(`DELETE FROM artist_tags WHERE artist_id = $1`, [artistId]);
+          for (const tagId of tagIds) {
+            await db.query(
+              `INSERT INTO artist_tags (artist_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+              [artistId, tagId]
+            );
+          }
+        }
+      }
+
+      return {
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({ message: `Edit request ${action}`, id: subResult.rows[0].id })
+      };
+    }
 
   } catch (error) {
     console.error("Error reviewing submission:", error);
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: HEADERS,
       body: JSON.stringify({ error: "Failed to review submission" })
     };
   } finally {
