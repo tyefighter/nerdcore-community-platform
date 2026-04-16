@@ -154,7 +154,7 @@
 
 <div class="page">
 	<header>
-		<h1>Nerd Music</h1>
+		<a href="/" class="home-link"><h1>Nerd Music</h1></a>
 		<div class="legend">
 			<span class="legend-item"><span class="dot nerdcore"></span>Nerdcore</span>
 			<span class="legend-item"><span class="dot vgm"></span>VGM</span>
@@ -288,11 +288,20 @@
 
 	.legend {
 		display: flex;
-		gap: 1rem;
+		gap: 0.65rem;
 		font-size: 0.75rem;
 		color: #aaa;
 		align-items: center;
 		flex: 1;
+		margin-left: 2rem;
+	}
+
+	.home-link {
+		text-decoration: none;
+	}
+
+	.home-link:hover h1 {
+		opacity: 0.8;
 	}
 
 	nav {
