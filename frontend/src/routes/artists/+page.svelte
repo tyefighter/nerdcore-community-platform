@@ -163,7 +163,9 @@
 			<span class="dot other"></span> Other
 		</div>
 		<nav>
-			<a href="/submit/artist">+ Submit Artist</a>
+			<a href="/events">Events</a>
+			<a href="/submit/artist">Submit Artist</a>
+			<a href="/submit/event">Submit Event</a>
 			<a href="/">Home</a>
 		</nav>
 	</header>

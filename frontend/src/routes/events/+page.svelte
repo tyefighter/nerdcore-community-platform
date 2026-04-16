@@ -103,7 +103,9 @@
 			<span class="dot" style="background:#00f5ff"></span> Online
 		</div>
 		<nav>
-			<a href="/submit/event">+ Submit Event</a>
+			<a href="/artists">Artist Map</a>
+			<a href="/submit/artist">Submit Artist</a>
+			<a href="/submit/event">Submit Event</a>
 			<a href="/">Home</a>
 		</nav>
 	</header>
