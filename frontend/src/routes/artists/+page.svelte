@@ -154,7 +154,15 @@
 
 <div class="page">
 	<header>
-		<a href="/" class="home-link"><h1>Nerd Music</h1></a>
+		<div class="header-top">
+			<a href="/" class="home-link"><h1>Nerd Music</h1></a>
+			<nav>
+				<a href="/events">Events</a>
+				<a href="/submit/artist">Submit Artist</a>
+				<a href="/submit/event">Submit Event</a>
+				<a href="/">Home</a>
+			</nav>
+		</div>
 		<div class="legend">
 			<span class="legend-item"><span class="dot nerdcore"></span>Nerdcore</span>
 			<span class="legend-item"><span class="dot vgm"></span>VGM</span>
@@ -162,12 +170,6 @@
 			<span class="legend-item"><span class="dot visualist"></span>Visualist</span>
 			<span class="legend-item"><span class="dot other"></span>Other</span>
 		</div>
-		<nav>
-			<a href="/events">Events</a>
-			<a href="/submit/artist">Submit Artist</a>
-			<a href="/submit/event">Submit Event</a>
-			<a href="/">Home</a>
-		</nav>
 	</header>
 
 	<div class="layout">
@@ -274,10 +276,17 @@
 
 	header {
 		display: flex;
+		flex-direction: column;
+		padding: 0.75rem 1.5rem;
+		border-bottom: 1px solid #222;
+		gap: 0.5rem;
+	}
+
+	.header-top {
+		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 1rem 1.5rem;
-		border-bottom: 1px solid #222;
+		width: 100%;
 	}
 
 	h1 {
@@ -288,12 +297,11 @@
 
 	.legend {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.65rem;
 		font-size: 0.75rem;
 		color: #aaa;
 		align-items: center;
-		flex: 1;
-		margin-left: 2rem;
 	}
 
 	.home-link {
@@ -572,8 +580,6 @@
 
 	@media (max-width: 768px) {
 		header {
-			flex-wrap: wrap;
-			gap: 0.5rem;
 			padding: 0.75rem 1rem;
 		}
 
@@ -582,10 +588,8 @@
 		}
 
 		.legend {
-			flex: none;
-			width: 100%;
 			font-size: 0.7rem;
-			gap: 0.75rem;
+			gap: 0.5rem;
 		}
 
 		nav {
