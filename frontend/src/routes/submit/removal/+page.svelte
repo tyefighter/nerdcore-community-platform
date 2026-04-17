@@ -88,13 +88,12 @@
 			</div>
 
 			<div class="field">
-				<label for="reason">Reason for removal <span class="required">*</span></label>
+				<label for="reason">Reason for removal <span class="optional">(optional)</span></label>
 				<textarea
 					id="reason"
 					bind:value={reason}
 					placeholder="Why should this artist be removed? (e.g. no longer active, duplicate listing, artist request, harmful content)"
 					rows="5"
-					required
 				></textarea>
 			</div>
 
@@ -167,6 +166,13 @@
 	}
 
 	.required { color: #983cba; }
+
+	.optional {
+		font-size: 0.7rem;
+		color: #555;
+		text-transform: none;
+		letter-spacing: 0;
+	}
 
 	input, textarea {
 		background: #111;
