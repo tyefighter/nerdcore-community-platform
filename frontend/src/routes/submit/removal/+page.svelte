@@ -84,8 +84,12 @@
 		<div class="success">
 			<p class="success-msg">Request received. A moderator will review it shortly.</p>
 			<div class="success-actions">
-				<button onclick={reset}>Submit another</button>
-				<a href="/">Back to home</a>
+				{#if isEvent}
+					<a href="/events">Back to events</a>
+				{:else}
+					<button onclick={reset}>Submit another</button>
+					<a href="/">Back to home</a>
+				{/if}
 			</div>
 		</div>
 	{:else}
