@@ -463,13 +463,12 @@
 			</div>
 
 			<div class="field">
-				<label for="reason">Reason for edit <span class="required">*</span></label>
+				<label for="reason">Reason for edit <span class="optional">(optional)</span></label>
 				<textarea
 					id="reason"
 					bind:value={reason}
 					placeholder="What needs to be updated and why?"
 					rows="3"
-					required
 				></textarea>
 			</div>
 
