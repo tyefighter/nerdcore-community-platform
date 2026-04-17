@@ -39,22 +39,25 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body || "{}");
 
     // Validate required fields
-    if (!body.display_name || !body.role) {
+    if (!body.display_name) {
       return {
         statusCode: 400,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "display_name and role are required" })
+        body: JSON.stringify({ error: "display_name is required" })
       };
     }
 
-    // Validate role value
-    const validRoles = ["vocalist", "producer", "both"];
-    if (!validRoles.includes(body.role)) {
-      return {
-        statusCode: 400,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: "role must be vocalist, producer, or both" })
-      };
+    // Validate roles if provided
+    const validRoles = ["vocalist", "producer", "band", "visualist", "other"];
+    if (body.roles && Array.isArray(body.roles)) {
+      const invalid = body.roles.filter((r) => !validRoles.includes(r));
+      if (invalid.length > 0) {
+        return {
+          statusCode: 400,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ error: `Invalid role(s): ${invalid.join(", ")}` })
+        };
+      }
     }
 
     const credentials = await getCredentials();
@@ -95,7 +98,7 @@ export const handler = async (event) => {
       RETURNING id`,
       [
         body.display_name.trim(),
-        body.role,
+        body.roles?.length > 0 ? body.roles.join(", ") : null,
         body.city?.trim() || null,
         body.state?.toUpperCase() || null,
         regionId,

@@ -11,12 +11,12 @@
 		'International'
 	];
 
-	const ROLES = ['vocalist', 'producer', 'both'];
+	const ROLES = ['vocalist', 'producer', 'band', 'visualist', 'other'];
 
 	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'];
 
 	let display_name = $state('');
-	let role = $state('');
+	let selectedRoles: string[] = $state([]);
 	let city = $state('');
 	let state_val = $state('');
 	let region = $state('');
@@ -30,6 +30,14 @@
 	let submitting = $state(false);
 	let success = $state(false);
 	let error = $state('');
+
+	function toggleRole(role: string) {
+		if (selectedRoles.includes(role)) {
+			selectedRoles = selectedRoles.filter((r) => r !== role);
+		} else {
+			selectedRoles = [...selectedRoles, role];
+		}
+	}
 
 	function toggleTag(tag: string) {
 		if (selectedTags.includes(tag)) {
@@ -50,7 +58,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					display_name,
-					role,
+					roles: selectedRoles.length > 0 ? selectedRoles : undefined,
 					city,
 					state: state_val,
 					region: region || undefined,
@@ -109,18 +117,6 @@
 					<input type="text" bind:value={display_name} required placeholder="MC Example" />
 				</label>
 
-				<label>
-					Role *
-					<div class="radio-group">
-						{#each ROLES as r}
-							<label class="radio">
-								<input type="radio" bind:group={role} value={r} required />
-								{r}
-							</label>
-						{/each}
-					</div>
-				</label>
-
 				<div class="row">
 					<label>
 						City *
@@ -165,6 +161,20 @@
 					Website URL
 					<input type="url" bind:value={link_website} placeholder="https://..." />
 				</label>
+
+				<div class="tag-section">
+					<p class="tag-label">Role <span class="optional">(optional — select all that apply)</span></p>
+					<div class="tags">
+						{#each ROLES as r}
+							<button
+								type="button"
+								class="tag"
+								class:active={selectedRoles.includes(r)}
+								onclick={() => toggleRole(r)}
+							>{r}</button>
+						{/each}
+					</div>
+				</div>
 
 				<div class="tag-section">
 					<p class="tag-label">Tags</p>
@@ -321,22 +331,10 @@
 		flex: 1;
 	}
 
-	.radio-group {
-		display: flex;
-		gap: 1.5rem;
-		margin-top: 0.25rem;
-	}
-
-	.radio {
-		flex-direction: row;
-		align-items: center;
-		gap: 0.4rem;
-		color: #ccc;
-		cursor: pointer;
-	}
-
-	.radio input {
-		accent-color: #983cba;
+	.optional {
+		font-size: 0.7rem;
+		color: #555;
+		font-weight: normal;
 	}
 
 	.tag-section {

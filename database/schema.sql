@@ -67,7 +67,7 @@ ON CONFLICT (name) DO NOTHING;
 CREATE TABLE IF NOT EXISTS artists (
     id              SERIAL PRIMARY KEY,
     display_name    VARCHAR(150) NOT NULL,
-    role            VARCHAR(20) NOT NULL CHECK (role IN ('vocalist', 'producer', 'both')),
+    role            VARCHAR(100),                -- optional; comma-separated e.g. "vocalist, producer"
     city            VARCHAR(100),
     state           VARCHAR(50),
     region_id       INTEGER REFERENCES regions(id),
