@@ -91,6 +91,7 @@
 			<a href="/events">Event Calendar</a>
 			<a href="/submit/artist">Submit Artist</a>
 			<a href="/submit/event">Submit Event</a>
+			<a href="/about">About</a>
 		</nav>
 	</div>
 </div>
