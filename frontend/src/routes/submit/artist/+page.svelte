@@ -49,6 +49,13 @@
 		}
 	}
 
+	function normalizeUrl(url: string): string | undefined {
+		const trimmed = url.trim();
+		if (!trimmed) return undefined;
+		if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+		return `https://${trimmed}`;
+	}
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		submitting = true;
@@ -65,11 +72,11 @@
 					state: state_val,
 					region: region || undefined,
 					bio: bio || undefined,
-					link_soundcloud: link_soundcloud || undefined,
-					link_bandcamp: link_bandcamp || undefined,
-					link_twitter: link_twitter || undefined,
-					link_instagram: link_instagram || undefined,
-					link_website: link_website || undefined,
+					link_soundcloud: normalizeUrl(link_soundcloud),
+					link_bandcamp: normalizeUrl(link_bandcamp),
+					link_twitter: normalizeUrl(link_twitter),
+					link_instagram: normalizeUrl(link_instagram),
+					link_website: normalizeUrl(link_website),
 					tags: selectedTags.length > 0 ? selectedTags : undefined,
 					suggested_tag: suggested_tag.trim() || undefined
 				})
@@ -145,27 +152,27 @@
 
 				<label>
 					SoundCloud URL
-					<input type="url" bind:value={link_soundcloud} placeholder="https://soundcloud.com/..." />
+					<input type="text" bind:value={link_soundcloud} placeholder="soundcloud.com/yourname" />
 				</label>
 
 				<label>
 					Bandcamp URL
-					<input type="url" bind:value={link_bandcamp} placeholder="https://yourname.bandcamp.com" />
+					<input type="text" bind:value={link_bandcamp} placeholder="yourname.bandcamp.com" />
 				</label>
 
 				<label>
 					Twitter / X URL
-					<input type="url" bind:value={link_twitter} placeholder="https://twitter.com/..." />
+					<input type="text" bind:value={link_twitter} placeholder="twitter.com/yourname" />
 				</label>
 
 				<label>
 					Instagram URL
-					<input type="url" bind:value={link_instagram} placeholder="https://instagram.com/..." />
+					<input type="text" bind:value={link_instagram} placeholder="instagram.com/yourname" />
 				</label>
 
 				<label>
 					Website URL
-					<input type="url" bind:value={link_website} placeholder="https://..." />
+					<input type="text" bind:value={link_website} placeholder="yoursite.com" />
 				</label>
 
 				<div class="tag-section">

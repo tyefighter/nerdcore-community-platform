@@ -67,6 +67,13 @@
 		success = false;
 	}
 
+	function normalizeUrl(url: string): string | undefined {
+		const trimmed = url.trim();
+		if (!trimmed) return undefined;
+		if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+		return `https://${trimmed}`;
+	}
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		submitting = true;
@@ -93,7 +100,7 @@
 					city: is_online ? undefined : city || undefined,
 					state: is_online ? undefined : state_val || undefined,
 					region: region || undefined,
-					event_url: event_url || undefined,
+					event_url: normalizeUrl(event_url),
 					tags: selectedTags.length > 0 ? selectedTags : undefined,
 					performers: performers.length > 0 ? performers : undefined,
 					suggested_tag: suggested_tag.trim() || undefined
@@ -214,7 +221,7 @@
 
 				<label>
 					Event URL
-					<input type="url" bind:value={event_url} placeholder="https://..." />
+					<input type="text" bind:value={event_url} placeholder="facebook.com/events/..." />
 				</label>
 
 				<label>
