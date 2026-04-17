@@ -105,7 +105,19 @@
 
 <div class="page">
 	<header>
-		<h1>Nerd Music Events</h1>
+		<div class="header-top">
+			<h1>Nerd Music Events</h1>
+			<nav class:open={navOpen}>
+				<a href="/artists" onclick={() => navOpen = false}>Artist Map</a>
+				<a href="/submit/artist" onclick={() => navOpen = false}>Submit Artist</a>
+				<a href="/submit/event" onclick={() => navOpen = false}>Submit Event</a>
+				<a href="/contact" onclick={() => navOpen = false}>Contact</a>
+				<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi" onclick={() => navOpen = false}>Support ♥</a>
+			</nav>
+			<button class="hamburger" onclick={() => navOpen = !navOpen} aria-label="Menu">
+				{navOpen ? '✕' : '☰'}
+			</button>
+		</div>
 		<div class="legend">
 			<span class="dot" style="background:#39ff14"></span> Show
 			<span class="dot" style="background:#ff006e"></span> Festival
@@ -113,16 +125,6 @@
 			<span class="dot" style="background:#ff4444"></span> Deadline
 			<span class="dot" style="background:#00f5ff"></span> Online
 		</div>
-		<nav class:open={navOpen}>
-			<a href="/artists" onclick={() => navOpen = false}>Artist Map</a>
-			<a href="/submit/artist" onclick={() => navOpen = false}>Submit Artist</a>
-			<a href="/submit/event" onclick={() => navOpen = false}>Submit Event</a>
-			<a href="/contact" onclick={() => navOpen = false}>Contact</a>
-			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi" onclick={() => navOpen = false}>Support ♥</a>
-		</nav>
-		<button class="hamburger" onclick={() => navOpen = !navOpen} aria-label="Menu">
-			{navOpen ? '✕' : '☰'}
-		</button>
 	</header>
 
 	{#if error}
@@ -266,11 +268,18 @@
 
 	header {
 		display: flex;
-		align-items: center;
-		gap: 1.5rem;
-		padding: 1rem 1.5rem;
+		flex-direction: column;
+		padding: 0.75rem 1.5rem;
 		border-bottom: 1px solid #222;
 		position: relative;
+		gap: 0.5rem;
+	}
+
+	.header-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
 	}
 
 	h1 {
@@ -285,7 +294,6 @@
 		font-size: 0.75rem;
 		color: #aaa;
 		align-items: center;
-		flex: 1;
 	}
 
 	nav {
@@ -505,8 +513,6 @@
 
 	@media (max-width: 768px) {
 		header {
-			flex-wrap: nowrap;
-			gap: 0.5rem;
 			padding: 0.75rem 1rem;
 		}
 
