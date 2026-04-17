@@ -70,6 +70,7 @@
 		'Portland, OR': [-122.6765, 45.5231],
 		'Columbus, OH': [-82.9988, 39.9612],
 		'Orlando, FL': [-81.3792, 28.5383],
+		'Fort Worth, TX': [-97.3308, 32.7555],
 	};
 
 	function getCoordinates(city: string, state: string): [number, number] | null {
