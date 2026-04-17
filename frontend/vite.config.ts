@@ -8,6 +8,6 @@ export default defineConfig({
 		exclude: ['mapbox-gl']
 	},
 	ssr: {
-		noExternal: ['mapbox-gl']
+		noExternal: ['mapbox-gl', '@fullcalendar/core', '@fullcalendar/daygrid', '@fullcalendar/list', '@fullcalendar/interaction']
 	}
 });
