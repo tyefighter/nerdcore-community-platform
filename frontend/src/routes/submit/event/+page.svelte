@@ -29,6 +29,7 @@
 	let event_url = $state('');
 	let performers_raw = $state('');
 	let selectedTags: string[] = $state([]);
+	let suggested_tag = $state('');
 
 	let submitting = $state(false);
 	let success = $state(false);
@@ -62,6 +63,7 @@
 		event_url = '';
 		performers_raw = '';
 		selectedTags = [];
+		suggested_tag = '';
 		success = false;
 	}
 
@@ -93,7 +95,8 @@
 					region: region || undefined,
 					event_url: event_url || undefined,
 					tags: selectedTags.length > 0 ? selectedTags : undefined,
-					performers: performers.length > 0 ? performers : undefined
+					performers: performers.length > 0 ? performers : undefined,
+					suggested_tag: suggested_tag.trim() || undefined
 				})
 			});
 
@@ -229,6 +232,10 @@
 							>{tag}</button>
 						{/each}
 					</div>
+					<label class="suggest-label">
+						Don't see the right tag? Suggest one <span class="optional">(optional)</span>
+						<input type="text" bind:value={suggested_tag} placeholder="e.g. album release" maxlength={50} />
+					</label>
 				</div>
 			</section>
 
@@ -401,6 +408,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.suggest-label {
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		color: #666;
 	}
 
 	.tag-label {

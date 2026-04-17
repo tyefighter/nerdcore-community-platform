@@ -90,3 +90,32 @@
 - [ ] Admin routes require JWT auth
 - [ ] Separate public API view vs. admin API view
 - [ ] RDS not publicly accessible — Lambda connects via VPC
+
+---
+
+## Improvements & Remaining Work
+
+### Map / Artists
+- [ ] Replace hardcoded city coordinates with Mapbox geocoding API (auto-lookup on approval)
+- [ ] Add bandcamp and instagram URL fields to artist submission form
+- [ ] Add edit and remove links to event detail panel on calendar (same as artist panel)
+
+### Events / Calendar
+- [ ] Add edit and remove links to event detail panel on calendar (same as artist panel)
+  - Requires: submit-removal + submit-edit Lambdas to accept event_id
+  - Requires: admin-review-submission to handle event removals/edits
+  - Frontend: new /submit/edit?event_id= and /submit/removal?event_id= flows
+
+### Submission Forms
+- [ ] Make removal request reason field optional
+- [ ] Add contact us / general feedback form
+- [ ] Add "suggest a tag" free-text field to artist and event submission forms (stored in raw_data payload, visible to mods on review)
+- [ ] Admin: "Suggested Tags" button that queries raw_data JSONB across all submissions and returns each suggested tag + how many times it's been submitted (new Lambda endpoint + admin UI panel)
+
+### Security
+- [ ] Fix SSL rejectUnauthorized: false in all Lambda DB connections (use proper cert bundle)
+
+### Nice-to-Haves
+- [ ] Discord notification to mod channel when a new submission arrives
+- [ ] Discord notification to submitter when their submission is approved/rejected
+- [ ] "Show nearby events" toggle on artist map — overlays upcoming event dots (next 30–60 days) on top of artist dots, off by default to keep the map clean

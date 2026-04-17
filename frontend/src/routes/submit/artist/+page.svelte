@@ -25,6 +25,7 @@
 	let link_twitter = $state('');
 	let link_website = $state('');
 	let selectedTags: string[] = $state([]);
+	let suggested_tag = $state('');
 
 	let submitting = $state(false);
 	let success = $state(false);
@@ -57,7 +58,8 @@
 					link_soundcloud: link_soundcloud || undefined,
 					link_twitter: link_twitter || undefined,
 					link_website: link_website || undefined,
-					tags: selectedTags.length > 0 ? selectedTags : undefined
+					tags: selectedTags.length > 0 ? selectedTags : undefined,
+					suggested_tag: suggested_tag.trim() || undefined
 				})
 			});
 
@@ -176,6 +178,10 @@
 							>{tag}</button>
 						{/each}
 					</div>
+					<label class="suggest-label">
+						Don't see your genre? Suggest one <span class="optional">(optional)</span>
+						<input type="text" bind:value={suggested_tag} placeholder="e.g. comedy rap" maxlength={50} />
+					</label>
 				</div>
 			</section>
 
@@ -337,6 +343,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.suggest-label {
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		color: #666;
 	}
 
 	.tag-label {
