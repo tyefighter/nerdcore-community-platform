@@ -35,6 +35,8 @@
 		id: number;
 		artist_id: number | null;
 		artist_name: string | null;
+		event_id: number | null;
+		event_title: string | null;
 		reason: string;
 		submitted_at: string;
 		raw_data: any;
@@ -247,9 +249,12 @@
 						<div class="card removal-card">
 							<div class="card-header">
 								<div>
-									<strong>{removal.artist_name ?? removal.raw_data?.artist_name ?? 'Unknown artist'}</strong>
-									{#if removal.artist_id}
-										<span class="meta-sub">Artist ID: {removal.artist_id}</span>
+									{#if removal.event_id}
+										<strong>{removal.event_title ?? removal.raw_data?.event_title ?? `Event #${removal.event_id}`}</strong>
+										<span class="meta-sub">Event removal</span>
+									{:else}
+										<strong>{removal.artist_name ?? removal.raw_data?.artist_name ?? 'Unknown artist'}</strong>
+										<span class="meta-sub">Artist removal</span>
 									{/if}
 								</div>
 								<div class="actions">
@@ -257,7 +262,7 @@
 										class="approve"
 										disabled={reviewing === `removal-${removal.id}`}
 										onclick={() => review('removal', removal.id, 'approved')}
-									>Hide Artist</button>
+									>{removal.event_id ? 'Hide Event' : 'Hide Artist'}</button>
 									<button
 										class="reject"
 										disabled={reviewing === `removal-${removal.id}`}
@@ -267,7 +272,7 @@
 							</div>
 							<div class="card-body">
 								<p class="meta">Submitted {formatDate(removal.submitted_at)}</p>
-								<p class="bio">{removal.reason}</p>
+								{#if removal.reason}<p class="bio">{removal.reason}</p>{/if}
 							</div>
 						</div>
 					{/each}
