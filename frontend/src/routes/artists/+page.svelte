@@ -31,22 +31,33 @@
 	let activeFilter: string | null = $state(null);
 	let filterOpen = $state(false);
 	let navOpen = $state(false);
+	let viewportBounds: mapboxgl.LngLatBounds | null = $state(null);
 
 	const GENRES = ['Nerdcore', 'VGM', 'Chiptune', 'Visualist', 'Other'];
 
 	// Map marker elements keyed by artist id so we can show/hide them
 	const markerElements: Map<number, HTMLElement> = new Map();
 
+	function matchesTagFilter(a: Artist): boolean {
+		if (!activeFilter) return true;
+		if (activeFilter === 'other') return !a.tags.some(t => ['nerdcore','vgm','chiptune','visualist'].includes(t));
+		return a.tags.includes(activeFilter);
+	}
+
 	let filteredArtists = $derived(
-		activeFilter
-			? artists.filter(a => {
-				const f = activeFilter!.toLowerCase();
-				if (f === 'other') {
-					return !a.tags.some(t => ['nerdcore','vgm','chiptune','visualist'].includes(t));
-				}
-				return a.tags.includes(f);
-			})
-			: artists
+		artists.filter(a => {
+			if (!matchesTagFilter(a)) return false;
+			if (!viewportBounds) return true;
+			if (!a.lat || !a.lng) return false;
+			return viewportBounds.contains([a.lng, a.lat]);
+		})
+	);
+
+	// Artists with no coords, shown below the main list when viewport filtering is active
+	let noLocationArtists = $derived(
+		viewportBounds
+			? artists.filter(a => matchesTagFilter(a) && (!a.lat || !a.lng))
+			: []
 	);
 
 	function setFilter(genre: string) {
@@ -100,7 +111,12 @@
 
 		map.addControl(new mapboxgl.NavigationControl());
 
+		map.on('moveend', () => {
+			viewportBounds = map.getBounds();
+		});
+
 		map.on('load', () => {
+			viewportBounds = map.getBounds();
 			// Add a marker for each artist we have coordinates for
 			artists.forEach((artist) => {
 				if (!artist.lat || !artist.lng) return;
@@ -210,7 +226,7 @@
 					</div>
 				{:else}
 					<div class="panel-header">
-						<span>Artists ({filteredArtists.length})</span>
+						<span>Artists ({filteredArtists.length}{noLocationArtists.length > 0 ? ` + ${noLocationArtists.length} unlisted` : ''})</span>
 						<div class="filter-wrap">
 							<button class="filter-btn" class:active={activeFilter} onclick={() => filterOpen = !filterOpen}>
 								{activeFilter ? activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1) : 'Filter'} ▾
@@ -247,6 +263,20 @@
 							</li>
 						{/each}
 					</ul>
+					{#if noLocationArtists.length > 0}
+						<p class="no-location-label">Not on map</p>
+						<ul class="artist-list no-location">
+							{#each noLocationArtists as artist}
+								<li onclick={() => selectedArtist = artist}>
+									<span class="dot" style="background:{getGenreColor(artist.tags)}; box-shadow: 0 0 4px {getGenreColor(artist.tags)}"></span>
+									<div>
+										<strong>{artist.display_name}</strong>
+										<small>{artist.city}, {artist.state}</small>
+									</div>
+								</li>
+							{/each}
+						</ul>
+					{/if}
 				{/if}
 			{/if}
 		</div>
@@ -425,6 +455,20 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.no-location-label {
+		font-size: 0.65rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: #444;
+		margin: 1rem 0 0.4rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid #1a1a1a;
+	}
+
+	.artist-list.no-location li {
+		opacity: 0.5;
 	}
 
 	.artist-list li {
