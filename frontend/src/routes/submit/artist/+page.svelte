@@ -22,7 +22,9 @@
 	let region = $state('');
 	let bio = $state('');
 	let link_soundcloud = $state('');
+	let link_bandcamp = $state('');
 	let link_twitter = $state('');
+	let link_instagram = $state('');
 	let link_website = $state('');
 	let selectedTags: string[] = $state([]);
 	let suggested_tag = $state('');
@@ -64,7 +66,9 @@
 					region: region || undefined,
 					bio: bio || undefined,
 					link_soundcloud: link_soundcloud || undefined,
+					link_bandcamp: link_bandcamp || undefined,
 					link_twitter: link_twitter || undefined,
+					link_instagram: link_instagram || undefined,
 					link_website: link_website || undefined,
 					tags: selectedTags.length > 0 ? selectedTags : undefined,
 					suggested_tag: suggested_tag.trim() || undefined
@@ -101,7 +105,7 @@
 			<h2>Submission received</h2>
 			<p>Your artist profile is in the moderation queue. A moderator will review it before it appears publicly.</p>
 			<div class="success-actions">
-				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; role = ''; city = ''; state_val = ''; region = ''; bio = ''; link_soundcloud = ''; link_twitter = ''; link_website = ''; selectedTags = []; }}>Submit another</a>
+				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; region = ''; bio = ''; link_soundcloud = ''; link_bandcamp = ''; link_twitter = ''; link_instagram = ''; link_website = ''; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
 				<a href="/artists">View artist map</a>
 			</div>
 		</div>
@@ -153,8 +157,18 @@
 				</label>
 
 				<label>
+					Bandcamp URL
+					<input type="url" bind:value={link_bandcamp} placeholder="https://yourname.bandcamp.com" />
+				</label>
+
+				<label>
 					Twitter / X URL
 					<input type="url" bind:value={link_twitter} placeholder="https://twitter.com/..." />
+				</label>
+
+				<label>
+					Instagram URL
+					<input type="url" bind:value={link_instagram} placeholder="https://instagram.com/..." />
 				</label>
 
 				<label>
