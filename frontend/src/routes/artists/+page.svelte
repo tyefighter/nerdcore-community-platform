@@ -71,6 +71,8 @@
 		'Columbus, OH': [-82.9988, 39.9612],
 		'Orlando, FL': [-81.3792, 28.5383],
 		'Fort Worth, TX': [-97.3308, 32.7555],
+		'Albuquerque, NM': [-106.6504, 35.0844],
+		'Boone, NC': [-81.6746, 36.2168],
 	};
 
 	function getCoordinates(city: string, state: string): [number, number] | null {
