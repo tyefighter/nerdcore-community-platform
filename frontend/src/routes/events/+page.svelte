@@ -29,6 +29,7 @@
 	let selectedEvent: Event | null = $state(null);
 	let loading = $state(true);
 	let error = $state('');
+	let navOpen = $state(false);
 
 	function addDay(dateStr: string): string {
 		const d = new Date(dateStr + 'T12:00:00');
@@ -112,14 +113,16 @@
 			<span class="dot" style="background:#ff4444"></span> Deadline
 			<span class="dot" style="background:#00f5ff"></span> Online
 		</div>
-		<nav>
-			<a href="/artists">Artist Map</a>
-			<a href="/submit/artist">Submit Artist</a>
-			<a href="/submit/event">Submit Event</a>
-			<a href="/contact">Contact</a>
-			<a href="/">Home</a>
-			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
+		<nav class:open={navOpen}>
+			<a href="/artists" onclick={() => navOpen = false}>Artist Map</a>
+			<a href="/submit/artist" onclick={() => navOpen = false}>Submit Artist</a>
+			<a href="/submit/event" onclick={() => navOpen = false}>Submit Event</a>
+			<a href="/contact" onclick={() => navOpen = false}>Contact</a>
+			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi" onclick={() => navOpen = false}>Support ♥</a>
 		</nav>
+		<button class="hamburger" onclick={() => navOpen = !navOpen} aria-label="Menu">
+			{navOpen ? '✕' : '☰'}
+		</button>
 	</header>
 
 	{#if error}
@@ -267,6 +270,7 @@
 		gap: 1.5rem;
 		padding: 1rem 1.5rem;
 		border-bottom: 1px solid #222;
+		position: relative;
 	}
 
 	h1 {
@@ -288,6 +292,20 @@
 		display: flex;
 		gap: 1.5rem;
 	}
+
+	.hamburger {
+		display: none;
+		background: none;
+		border: none;
+		color: #888;
+		font-size: 1.2rem;
+		cursor: pointer;
+		padding: 0.25rem 0.5rem;
+		line-height: 1;
+		margin-left: auto;
+	}
+
+	.hamburger:hover { color: #fff; }
 
 	nav a {
 		font-size: 0.8rem;
@@ -487,7 +505,7 @@
 
 	@media (max-width: 768px) {
 		header {
-			flex-wrap: wrap;
+			flex-wrap: nowrap;
 			gap: 0.5rem;
 			padding: 0.75rem 1rem;
 		}
@@ -504,8 +522,35 @@
 			flex-wrap: wrap;
 		}
 
+		.hamburger {
+			display: block;
+		}
+
 		nav {
-			gap: 1rem;
+			display: none;
+			position: absolute;
+			top: 100%;
+			right: 0;
+			left: 0;
+			background: #0f0f0f;
+			border-bottom: 1px solid #222;
+			flex-direction: column;
+			gap: 0;
+			z-index: 100;
+		}
+
+		nav.open {
+			display: flex;
+		}
+
+		nav a {
+			padding: 0.85rem 1.25rem;
+			border-bottom: 1px solid #1a1a1a;
+			font-size: 0.85rem;
+		}
+
+		nav a:last-child {
+			border-bottom: none;
 		}
 
 		.page {

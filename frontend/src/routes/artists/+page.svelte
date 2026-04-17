@@ -30,6 +30,7 @@
 	let error = $state('');
 	let activeFilter: string | null = $state(null);
 	let filterOpen = $state(false);
+	let navOpen = $state(false);
 
 	const GENRES = ['Nerdcore', 'VGM', 'Chiptune', 'Visualist', 'Other'];
 
@@ -141,14 +142,16 @@
 	<header>
 		<div class="header-top">
 			<a href="/" class="home-link"><h1>Nerd Music</h1></a>
-			<nav>
-				<a href="/events">Events</a>
-				<a href="/submit/artist">Submit Artist</a>
-				<a href="/submit/event">Submit Event</a>
-				<a href="/contact">Contact</a>
-			<a href="/">Home</a>
-			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
+			<nav class:open={navOpen}>
+				<a href="/events" onclick={() => navOpen = false}>Events</a>
+				<a href="/submit/artist" onclick={() => navOpen = false}>Submit Artist</a>
+				<a href="/submit/event" onclick={() => navOpen = false}>Submit Event</a>
+				<a href="/contact" onclick={() => navOpen = false}>Contact</a>
+				<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi" onclick={() => navOpen = false}>Support ♥</a>
 			</nav>
+			<button class="hamburger" onclick={() => navOpen = !navOpen} aria-label="Menu">
+				{navOpen ? '✕' : '☰'}
+			</button>
 		</div>
 		<div class="legend">
 			<span class="legend-item"><span class="dot nerdcore"></span>Nerdcore</span>
@@ -267,6 +270,7 @@
 		padding: 0.75rem 1.5rem;
 		border-bottom: 1px solid #222;
 		gap: 0.5rem;
+		position: relative;
 	}
 
 	.header-top {
@@ -303,6 +307,19 @@
 		display: flex;
 		gap: 1.5rem;
 	}
+
+	.hamburger {
+		display: none;
+		background: none;
+		border: none;
+		color: #888;
+		font-size: 1.2rem;
+		cursor: pointer;
+		padding: 0.25rem 0.5rem;
+		line-height: 1;
+	}
+
+	.hamburger:hover { color: #fff; }
 
 	nav a {
 		font-size: 0.8rem;
@@ -581,8 +598,35 @@
 			gap: 0.5rem;
 		}
 
+		.hamburger {
+			display: block;
+		}
+
 		nav {
-			gap: 1rem;
+			display: none;
+			position: absolute;
+			top: 100%;
+			right: 0;
+			left: 0;
+			background: #0f0f0f;
+			border-bottom: 1px solid #222;
+			flex-direction: column;
+			gap: 0;
+			z-index: 100;
+		}
+
+		nav.open {
+			display: flex;
+		}
+
+		nav a {
+			padding: 0.85rem 1.25rem;
+			border-bottom: 1px solid #1a1a1a;
+			font-size: 0.85rem;
+		}
+
+		nav a:last-child {
+			border-bottom: none;
 		}
 
 		.page {
