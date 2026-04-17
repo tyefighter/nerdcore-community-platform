@@ -3,6 +3,7 @@
 	import { Calendar } from '@fullcalendar/core';
 	import dayGridPlugin from '@fullcalendar/daygrid';
 	import listPlugin from '@fullcalendar/list';
+	import interactionPlugin from '@fullcalendar/interaction';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	interface Event {
@@ -61,7 +62,7 @@
 
 		// Initialize FullCalendar
 		calendar = new Calendar(calendarEl, {
-			plugins: [dayGridPlugin, listPlugin],
+			plugins: [dayGridPlugin, listPlugin, interactionPlugin],
 			initialView: 'dayGridMonth',
 			headerToolbar: {
 				left: 'prev,next today',
