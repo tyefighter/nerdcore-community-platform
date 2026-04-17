@@ -440,7 +440,7 @@
 			<div class="field">
 				<label>Tags</label>
 				<div class="tag-group">
-					{#each ALL_TAGS as tag}
+					{#each ARTIST_TAGS as tag}
 						<button
 							type="button"
 							class="tag-btn"
