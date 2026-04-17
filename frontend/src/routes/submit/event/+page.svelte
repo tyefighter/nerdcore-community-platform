@@ -120,7 +120,8 @@
 		<h1>Submit an Event</h1>
 		<nav>
 			<a href="/events">← Event Calendar</a>
-			<a href="/">Home</a>
+			<a href="/contact">Contact</a>
+				<a href="/">Home</a>
 				<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
 		</nav>
 	</header>

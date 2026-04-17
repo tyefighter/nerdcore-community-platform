@@ -95,7 +95,8 @@
 		<h1>Submit an Artist</h1>
 		<nav>
 			<a href="/artists">← Artist Map</a>
-			<a href="/">Home</a>
+			<a href="/contact">Contact</a>
+				<a href="/">Home</a>
 				<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
 		</nav>
 	</header>

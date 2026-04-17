@@ -110,6 +110,7 @@
 			<a href="/artists">Artist Map</a>
 			<a href="/submit/artist">Submit Artist</a>
 			<a href="/submit/event">Submit Event</a>
+			<a href="/contact">Contact</a>
 			<a href="/">Home</a>
 			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
 		</nav>
