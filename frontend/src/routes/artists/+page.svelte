@@ -220,7 +220,7 @@
 						</div>
 						<div class="mod-links">
 							<a href="/submit/edit?id={selectedArtist.id}">Request edit</a>
-							<a href="/submit/removal?name={encodeURIComponent(selectedArtist.display_name)}">Request removal</a>
+							<a href="/submit/removal?name={encodeURIComponent(selectedArtist.display_name)}&id={selectedArtist.id}">Request removal</a>
 						</div>
 					</div>
 				{:else}

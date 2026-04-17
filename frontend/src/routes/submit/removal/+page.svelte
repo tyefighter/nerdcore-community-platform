@@ -4,6 +4,7 @@
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	let artistName = $state('');
+	let artistId: number | null = $state(null);
 	let reason = $state('');
 	let submitting = $state(false);
 	let submitted = $state(false);
@@ -11,7 +12,9 @@
 
 	onMount(() => {
 		const nameParam = $page.url.searchParams.get('name');
+		const idParam = $page.url.searchParams.get('id');
 		if (nameParam) artistName = nameParam;
+		if (idParam) artistId = parseInt(idParam);
 	});
 
 	async function handleSubmit(e: Event) {
@@ -25,6 +28,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					artist_name: artistName.trim(),
+					...(artistId ? { artist_id: artistId } : {}),
 					reason: reason.trim(),
 					source: 'website'
 				})
