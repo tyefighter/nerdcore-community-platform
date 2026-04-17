@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 	const REGIONS = [
@@ -30,6 +32,11 @@
 	let submitting = $state(false);
 	let success = $state(false);
 	let error = $state('');
+
+	onMount(() => {
+		const dateParam = $page.url.searchParams.get('date');
+		if (dateParam) start_date = dateParam;
+	});
 
 	function toggleTag(tag: string) {
 		if (selectedTags.includes(tag)) {

@@ -81,6 +81,9 @@
 				const found = events.find((e) => String(e.id) === event.id);
 				if (found) selectedEvent = found;
 			},
+			dateClick: ({ dateStr }) => {
+				window.location.href = `/submit/event?date=${dateStr}`;
+			},
 			height: '100%'
 		});
 
