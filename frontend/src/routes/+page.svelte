@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Nerd Music · Nerdcore & VGM Community Directory</title>
+</svelte:head>
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 

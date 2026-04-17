@@ -103,6 +103,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Event Calendar · Nerd Music</title>
+</svelte:head>
+
 <div class="page">
 	<header>
 		<div class="header-top">

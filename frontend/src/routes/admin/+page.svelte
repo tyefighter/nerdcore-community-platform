@@ -130,6 +130,10 @@
 	onMount(loadSubmissions);
 </script>
 
+<svelte:head>
+	<title>Moderation Queue · Nerd Music</title>
+</svelte:head>
+
 <div class="page">
 	<header>
 		<h1>Moderation Queue</h1>

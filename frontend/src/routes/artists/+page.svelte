@@ -154,6 +154,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Artist Map · Nerd Music</title>
+</svelte:head>
+
 <div class="page">
 	<header>
 		<div class="header-top">

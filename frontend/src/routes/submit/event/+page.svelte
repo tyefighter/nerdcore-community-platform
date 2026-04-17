@@ -122,6 +122,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Submit an Event · Nerd Music</title>
+</svelte:head>
+
 <div class="page">
 	<header>
 		<h1>Submit an Event</h1>
