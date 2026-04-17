@@ -13,8 +13,12 @@
 		operates_in: string;
 		bio: string;
 		link_soundcloud: string | null;
+		link_bandcamp: string | null;
 		link_twitter: string | null;
+		link_instagram: string | null;
 		link_website: string | null;
+		lat: number | null;
+		lng: number | null;
 		tags: string[];
 	}
 
@@ -54,30 +58,6 @@
 			const visible = !activeFilter || filteredArtists.includes(artist);
 			el.style.display = visible ? 'block' : 'none';
 		}
-	}
-
-	// City coordinates for placing markers (approximate city centers)
-	const cityCoordinates: Record<string, [number, number]> = {
-		'Richmond, VA': [-77.4360, 37.5407],
-		'Atlanta, GA': [-84.3880, 33.7490],
-		'Chicago, IL': [-87.6298, 41.8781],
-		'Nashville, TN': [-86.7816, 36.1627],
-		'New York, NY': [-74.0060, 40.7128],
-		'Los Angeles, CA': [-118.2437, 34.0522],
-		'Seattle, WA': [-122.3321, 47.6062],
-		'Austin, TX': [-97.7431, 30.2672],
-		'Boston, MA': [-71.0589, 42.3601],
-		'Portland, OR': [-122.6765, 45.5231],
-		'Columbus, OH': [-82.9988, 39.9612],
-		'Orlando, FL': [-81.3792, 28.5383],
-		'Fort Worth, TX': [-97.3308, 32.7555],
-		'Albuquerque, NM': [-106.6504, 35.0844],
-		'Boone, NC': [-81.6746, 36.2168],
-	};
-
-	function getCoordinates(city: string, state: string): [number, number] | null {
-		const key = `${city}, ${state}`;
-		return cityCoordinates[key] || null;
 	}
 
 	const GENRE_COLORS: Record<string, string> = {
@@ -122,8 +102,8 @@
 		map.on('load', () => {
 			// Add a marker for each artist we have coordinates for
 			artists.forEach((artist) => {
-				const coords = getCoordinates(artist.city, artist.state);
-				if (!coords) return;
+				if (!artist.lat || !artist.lng) return;
+				const coords: [number, number] = [artist.lng, artist.lat];
 
 				// Create a colored dot marker
 				const color = getGenreColor(artist.tags);

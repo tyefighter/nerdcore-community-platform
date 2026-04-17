@@ -83,7 +83,9 @@ CREATE TABLE IF NOT EXISTS artists (
                         CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),
     submitted_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     reviewed_at     TIMESTAMPTZ,
-    reviewed_by     VARCHAR(100)                -- moderator username or ID
+    reviewed_by     VARCHAR(100),               -- moderator username or ID
+    lat             NUMERIC(9,6),               -- set on approval via geocoding
+    lng             NUMERIC(9,6)                -- set on approval via geocoding
 );
 
 

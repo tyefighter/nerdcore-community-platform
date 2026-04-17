@@ -85,6 +85,8 @@ export const handler = async (event) => {
         a.link_twitter,
         a.link_instagram,
         a.link_website,
+        a.lat,
+        a.lng,
         COALESCE(
           json_agg(DISTINCT t.name) FILTER (WHERE t.name IS NOT NULL),
           '[]'
