@@ -96,24 +96,32 @@
 ## Improvements & Remaining Work
 
 ### Map / Artists
-- [ ] Replace hardcoded city coordinates with Mapbox geocoding API (auto-lookup on approval)
-- [ ] Add bandcamp and instagram URL fields to artist submission form
-- [ ] Add edit and remove links to event detail panel on calendar (same as artist panel)
+- [x] Replace hardcoded city coordinates with Mapbox geocoding API (geocoding runs in admin browser on approval)
+- [x] Add bandcamp and instagram URL fields to artist submission form
+- [x] Role field changed to multi-select (vocalist, producer, band, visualist, other)
+- [x] Remove region dropdown from artist submission form
 
 ### Events / Calendar
-- [ ] Add edit and remove links to event detail panel on calendar (same as artist panel)
-  - Requires: submit-removal + submit-edit Lambdas to accept event_id
-  - Requires: admin-review-submission to handle event removals/edits
-  - Frontend: new /submit/edit?event_id= and /submit/removal?event_id= flows
+- [x] Add edit and remove links to event detail panel on calendar
+- [x] Fix FullCalendar date display (exclusive end date + UTC timezone shift)
+- [x] dateClick to pre-fill start date on event submission form
 
 ### Submission Forms
-- [ ] Make removal request reason field optional
-- [ ] Add contact us / general feedback form
-- [ ] Add "suggest a tag" free-text field to artist and event submission forms (stored in raw_data payload, visible to mods on review)
-- [ ] Admin: "Suggested Tags" button that queries raw_data JSONB across all submissions and returns each suggested tag + how many times it's been submitted (new Lambda endpoint + admin UI panel)
+- [x] Make removal and edit request reason fields optional
+- [x] Add contact us / feedback form (EmailJS)
+- [x] Add "suggest a tag" free-text field to artist and event submission forms
+- [x] Auto-prepend https:// to URL fields if missing
+- [x] Ko-fi donation link in all navbars
+- [ ] Admin: "Suggested Tags" panel — query raw_data JSONB across all submissions, show each unique suggested tag + count (new Lambda endpoint + admin UI section)
 
-### Security
+### Pages & Content
+- [ ] About Us page — explain what the platform is, who runs it, how to get involved
+
+### Security (Tech Debt)
 - [ ] Fix SSL rejectUnauthorized: false in all Lambda DB connections (use proper cert bundle)
+  - Low actual risk: Lambda runs inside VPC, RDS only accepts VPC connections — network is already private
+  - Proper fix: bundle AWS RDS CA cert into each Lambda zip, adds complexity to every deploy
+  - Revisit if compliance or audit requirements arise
 
 ### Nice-to-Haves
 - [ ] Discord notification to mod channel when a new submission arrives

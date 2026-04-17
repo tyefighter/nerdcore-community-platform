@@ -30,6 +30,12 @@
 	let loading = $state(true);
 	let error = $state('');
 
+	function addDay(dateStr: string): string {
+		const d = new Date(dateStr + 'T12:00:00');
+		d.setDate(d.getDate() + 1);
+		return d.toISOString().slice(0, 10);
+	}
+
 	function getTagColor(tags: string[]): string {
 		if (tags.includes('vpc')) return '#ffe600';
 		if (tags.includes('festival')) return '#ff006e';
@@ -39,7 +45,7 @@
 	}
 
 	function formatDate(dateStr: string): string {
-		return new Date(dateStr).toLocaleDateString('en-US', {
+		return new Date(dateStr.slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', {
 			weekday: 'short',
 			year: 'numeric',
 			month: 'short',
@@ -72,8 +78,8 @@
 			events: events.map((e) => ({
 				id: String(e.id),
 				title: e.title,
-				start: e.start_date,
-				end: e.end_date || undefined,
+				start: e.start_date.slice(0, 10),
+				end: e.end_date ? addDay(e.end_date.slice(0, 10)) : undefined,
 				backgroundColor: getTagColor(e.tags),
 				borderColor: getTagColor(e.tags),
 				textColor: '#000000'
