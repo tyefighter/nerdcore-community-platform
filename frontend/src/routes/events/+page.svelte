@@ -111,6 +111,7 @@
 			<a href="/submit/artist">Submit Artist</a>
 			<a href="/submit/event">Submit Event</a>
 			<a href="/">Home</a>
+			<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
 		</nav>
 	</header>
 
@@ -284,6 +285,8 @@
 	}
 
 	nav a:hover { color: #fff; }
+	nav a.kofi { color: #ff5e5b; }
+	nav a.kofi:hover { color: #ff8a88; }
 
 	.layout {
 		display: flex;

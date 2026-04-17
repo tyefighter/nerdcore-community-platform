@@ -121,6 +121,7 @@
 		<nav>
 			<a href="/events">← Event Calendar</a>
 			<a href="/">Home</a>
+				<a href="https://ko-fi.com/nerdmusicmap" target="_blank" class="kofi">Support ♥</a>
 		</nav>
 	</header>
 
@@ -286,6 +287,8 @@
 	}
 
 	nav a:hover { color: #fff; }
+	nav a.kofi { color: #ff5e5b; }
+	nav a.kofi:hover { color: #ff8a88; }
 
 	form {
 		max-width: 600px;
