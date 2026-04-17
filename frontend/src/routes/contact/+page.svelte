@@ -2,7 +2,7 @@
 	import emailjs from '@emailjs/browser';
 
 	const SERVICE_ID = 'service_enj058s';
-	const TEMPLATE_ID = 'template_rajma7g';
+	const TEMPLATE_ID = 'template_p4mjfex';
 	const PUBLIC_KEY = 'jPq4cADxA2YzbMNuV';
 
 	let name = $state('');
