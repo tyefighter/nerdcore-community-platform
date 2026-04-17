@@ -69,6 +69,7 @@
 		'Boston, MA': [-71.0589, 42.3601],
 		'Portland, OR': [-122.6765, 45.5231],
 		'Columbus, OH': [-82.9988, 39.9612],
+		'Orlando, FL': [-81.3792, 28.5383],
 	};
 
 	function getCoordinates(city: string, state: string): [number, number] | null {
