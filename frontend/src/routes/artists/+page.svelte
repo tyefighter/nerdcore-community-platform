@@ -68,6 +68,7 @@
 		'Austin, TX': [-97.7431, 30.2672],
 		'Boston, MA': [-71.0589, 42.3601],
 		'Portland, OR': [-122.6765, 45.5231],
+		'Columbus, OH': [-82.9988, 39.9612],
 	};
 
 	function getCoordinates(city: string, state: string): [number, number] | null {
