@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PUBLIC_API_BASE_URL, PUBLIC_ADMIN_KEY } from '$env/static/public';
+	import { PUBLIC_API_BASE_URL, PUBLIC_ADMIN_KEY, PUBLIC_MAPBOX_TOKEN } from '$env/static/public';
 
 	interface ArtistSubmission {
 		id: number;
@@ -85,13 +85,33 @@
 		}
 	}
 
-	async function review(type: 'artist' | 'event' | 'removal' | 'edit', id: number, action: 'approved' | 'rejected') {
+	async function geocode(city: string, state: string): Promise<{ lat: number, lng: number } | null> {
+		try {
+			const q = encodeURIComponent(`${city}, ${state}, USA`);
+			const res = await fetch(
+				`https://api.mapbox.com/geocoding/v5/mapbox.places/${q}.json?types=place&limit=1&access_token=${PUBLIC_MAPBOX_TOKEN}`
+			);
+			const data = await res.json();
+			const coords = data.features?.[0]?.center;
+			if (coords) return { lng: coords[0], lat: coords[1] };
+		} catch {
+			console.error('Geocoding failed');
+		}
+		return null;
+	}
+
+	async function review(type: 'artist' | 'event' | 'removal' | 'edit', id: number, action: 'approved' | 'rejected', artist?: ArtistSubmission) {
 		reviewing = `${type}-${id}`;
 		try {
+			let coords: { lat: number, lng: number } | null = null;
+			if (type === 'artist' && action === 'approved' && artist?.city && artist?.state) {
+				coords = await geocode(artist.city, artist.state);
+			}
+
 			const res = await fetch(`${PUBLIC_API_BASE_URL}/admin/review`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', 'x-admin-key': PUBLIC_ADMIN_KEY },
-				body: JSON.stringify({ type, id, action })
+				body: JSON.stringify({ type, id, action, ...(coords ?? {}) })
 			});
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			if (type === 'artist') artists = artists.filter(a => a.id !== id);
@@ -141,12 +161,12 @@
 									<button
 										class="approve"
 										disabled={reviewing === `artist-${artist.id}`}
-										onclick={() => review('artist', artist.id, 'approved')}
+										onclick={() => review('artist', artist.id, 'approved', artist)}
 									>Approve</button>
 									<button
 										class="reject"
 										disabled={reviewing === `artist-${artist.id}`}
-										onclick={() => review('artist', artist.id, 'rejected')}
+										onclick={() => review('artist', artist.id, 'rejected', artist)}
 									>Reject</button>
 								</div>
 							</div>

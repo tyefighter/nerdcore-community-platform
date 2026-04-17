@@ -101,28 +101,12 @@ export const handler = async (event) => {
         };
       }
 
-      // Geocode the city when approving an artist
-      if (type === "artist" && action === "approved") {
-        const { city, state } = result.rows[0];
-        if (city && state) {
-          try {
-            const query = encodeURIComponent(`${city}, ${state}, USA`);
-            const token = process.env.MAPBOX_TOKEN;
-            const geoRes = await fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?types=place&limit=1&access_token=${token}`
-            );
-            const geoData = await geoRes.json();
-            const coords = geoData.features?.[0]?.center;
-            if (coords) {
-              await db.query(
-                `UPDATE artists SET lng = $1, lat = $2 WHERE id = $3`,
-                [coords[0], coords[1], result.rows[0].id]
-              );
-            }
-          } catch (geoErr) {
-            console.error("Geocoding failed (non-fatal):", geoErr);
-          }
-        }
+      // Save coordinates if provided (geocoded by the admin frontend)
+      if (type === "artist" && action === "approved" && body.lat && body.lng) {
+        await db.query(
+          `UPDATE artists SET lat = $1, lng = $2 WHERE id = $3`,
+          [body.lat, body.lng, result.rows[0].id]
+        );
       }
 
       return {
