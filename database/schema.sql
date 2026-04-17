@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS events (
     title           VARCHAR(200) NOT NULL,
     description     TEXT,
     venue           VARCHAR(200),
+    address         VARCHAR(300),
     city            VARCHAR(100),
     state           VARCHAR(50),
     region_id       INTEGER REFERENCES regions(id),

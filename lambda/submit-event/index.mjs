@@ -77,14 +77,15 @@ export const handler = async (event) => {
     // Insert into events table with pending status
     const result = await db.query(
       `INSERT INTO events (
-        title, description, venue, city, state, region_id,
+        title, description, venue, address, city, state, region_id,
         is_online, start_date, end_date, start_time, event_url, status
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'pending')
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'pending')
       RETURNING id`,
       [
         body.title.trim(),
         body.description?.trim() || null,
         body.venue?.trim() || null,
+        body.address?.trim() || null,
         body.city?.trim() || null,
         body.state?.toUpperCase() || null,
         regionId,

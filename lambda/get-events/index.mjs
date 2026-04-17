@@ -78,6 +78,7 @@ export const handler = async (event) => {
         e.title,
         e.description,
         e.venue,
+        e.address,
         e.city,
         e.state,
         r.name AS region,
