@@ -13,7 +13,7 @@
 		'International'
 	];
 
-	const AVAILABLE_TAGS = ['nerdcore', 'festival', 'vpc', 'online-event', 'deadline', 'chiptune', 'battle-rap'];
+	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'festival', 'vpc', 'online-event', 'deadline', 'local-show'];
 
 	let title = $state('');
 	let description = $state('');
@@ -22,6 +22,7 @@
 	let start_time = $state('');
 	let is_online = $state(false);
 	let venue = $state('');
+	let address = $state('');
 	let city = $state('');
 	let state_val = $state('');
 	let region = $state('');
@@ -54,6 +55,7 @@
 		start_time = '';
 		is_online = false;
 		venue = '';
+		address = '';
 		city = '';
 		state_val = '';
 		region = '';
@@ -85,6 +87,7 @@
 					start_time: start_time || undefined,
 					is_online,
 					venue: venue || undefined,
+					address: is_online ? undefined : address || undefined,
 					city: is_online ? undefined : city || undefined,
 					state: is_online ? undefined : state_val || undefined,
 					region: region || undefined,
@@ -168,6 +171,10 @@
 					<label>
 						Venue
 						<input type="text" bind:value={venue} placeholder="The Broadberry" />
+					</label>
+					<label>
+						Full address <span class="optional">(optional)</span>
+						<input type="text" bind:value={address} placeholder="123 Main St, Richmond, VA 23220" />
 					</label>
 					<div class="row">
 						<label>
@@ -342,6 +349,14 @@
 	select:focus,
 	textarea:focus {
 		border-color: #983cba;
+	}
+
+	.optional {
+		font-size: 0.7rem;
+		color: #555;
+		font-weight: normal;
+		text-transform: none;
+		letter-spacing: 0;
 	}
 
 	input.short {
