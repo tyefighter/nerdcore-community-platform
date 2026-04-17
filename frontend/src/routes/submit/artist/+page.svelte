@@ -139,16 +139,6 @@
 				<h2>Optional</h2>
 
 				<label>
-					Region
-					<select bind:value={region}>
-						<option value="">— select —</option>
-						{#each REGIONS as r}
-							<option value={r}>{r}</option>
-						{/each}
-					</select>
-				</label>
-
-				<label>
 					Bio
 					<textarea bind:value={bio} rows={4} placeholder="Tell the community about yourself..."></textarea>
 				</label>
