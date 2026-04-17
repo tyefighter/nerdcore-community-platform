@@ -118,9 +118,12 @@ export const handler = async (event) => {
         s.submitted_at,
         s.raw_data,
         a.id AS artist_id,
-        a.display_name AS artist_name
+        a.display_name AS artist_name,
+        e.id AS event_id,
+        e.title AS event_title
       FROM submissions s
       LEFT JOIN artists a ON s.artist_id = a.id
+      LEFT JOIN events e ON s.event_id = e.id
       WHERE s.type = 'removal' AND s.status = 'pending'
       ORDER BY s.id ASC
     `);
@@ -133,9 +136,12 @@ export const handler = async (event) => {
         s.submitted_at,
         s.raw_data,
         a.id AS artist_id,
-        a.display_name AS artist_name
+        a.display_name AS artist_name,
+        e.id AS event_id,
+        e.title AS event_title
       FROM submissions s
       LEFT JOIN artists a ON s.artist_id = a.id
+      LEFT JOIN events e ON s.event_id = e.id
       WHERE s.type = 'edit' AND s.status = 'pending'
       ORDER BY s.id ASC
     `);

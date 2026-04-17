@@ -5,16 +5,24 @@
 
 	let artistName = $state('');
 	let artistId: number | null = $state(null);
+	let eventTitle = $state('');
+	let eventId: number | null = $state(null);
 	let reason = $state('');
 	let submitting = $state(false);
 	let submitted = $state(false);
 	let error = $state('');
 
+	let isEvent = $derived(eventId !== null);
+
 	onMount(() => {
 		const nameParam = $page.url.searchParams.get('name');
 		const idParam = $page.url.searchParams.get('id');
+		const eventIdParam = $page.url.searchParams.get('event_id');
+		const eventTitleParam = $page.url.searchParams.get('event_title');
 		if (nameParam) artistName = nameParam;
 		if (idParam) artistId = parseInt(idParam);
+		if (eventIdParam) eventId = parseInt(eventIdParam);
+		if (eventTitleParam) eventTitle = eventTitleParam;
 	});
 
 	async function handleSubmit(e: Event) {
@@ -23,15 +31,21 @@
 		error = '';
 
 		try {
+			const payload: Record<string, any> = {
+				reason: reason.trim() || undefined,
+				source: 'website'
+			};
+			if (isEvent) {
+				payload.event_id = eventId;
+			} else {
+				payload.artist_name = artistName.trim();
+				if (artistId) payload.artist_id = artistId;
+			}
+
 			const res = await fetch(`${PUBLIC_API_BASE_URL}/submissions/removal`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					artist_name: artistName.trim(),
-					...(artistId ? { artist_id: artistId } : {}),
-					reason: reason.trim(),
-					source: 'website'
-				})
+				body: JSON.stringify(payload)
 			});
 
 			if (!res.ok) {
@@ -61,9 +75,9 @@
 
 <div class="page">
 	<header>
-		<a href="/" class="back">← Home</a>
-		<h1>Request Artist Removal</h1>
-		<p class="subtitle">Ask a moderator to remove an artist from the directory.</p>
+		<a href={isEvent ? '/events' : '/artists'} class="back">← {isEvent ? 'Events' : 'Artist Map'}</a>
+		<h1>{isEvent ? 'Request Event Removal' : 'Request Artist Removal'}</h1>
+		<p class="subtitle">Ask a moderator to remove this {isEvent ? 'event' : 'artist'} from the directory.</p>
 	</header>
 
 	{#if submitted}
@@ -77,14 +91,19 @@
 	{:else}
 		<form onsubmit={handleSubmit}>
 			<div class="field">
-				<label for="artist_name">Artist name <span class="required">*</span></label>
-				<input
-					id="artist_name"
-					type="text"
-					bind:value={artistName}
-					placeholder="Name as it appears in the directory"
-					required
-				/>
+				{#if isEvent}
+					<label>Event</label>
+					<p class="prefilled">{eventTitle || `Event #${eventId}`}</p>
+				{:else}
+					<label for="artist_name">Artist name <span class="required">*</span></label>
+					<input
+						id="artist_name"
+						type="text"
+						bind:value={artistName}
+						placeholder="Name as it appears in the directory"
+						required
+					/>
+				{/if}
 			</div>
 
 			<div class="field">
@@ -166,6 +185,13 @@
 	}
 
 	.required { color: #983cba; }
+
+	.prefilled {
+		font-size: 0.9rem;
+		color: #fff;
+		margin: 0;
+		padding: 0.5rem 0;
+	}
 
 	.optional {
 		font-size: 0.7rem;

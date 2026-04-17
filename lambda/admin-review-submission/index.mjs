@@ -116,12 +116,12 @@ export const handler = async (event) => {
       };
     }
 
-    // --- Removal: mark submission reviewed; if approved, hide the artist ---
+    // --- Removal: mark submission reviewed; if approved, hide the artist or event ---
     if (type === "removal") {
       const subResult = await db.query(
         `UPDATE submissions SET status = $1, reviewed_at = NOW()
          WHERE id = $2 AND type = 'removal' AND status = 'pending'
-         RETURNING id, artist_id`,
+         RETURNING id, artist_id, event_id`,
         [action, id]
       );
       if (subResult.rows.length === 0) {
@@ -131,11 +131,18 @@ export const handler = async (event) => {
           body: JSON.stringify({ error: "Removal request not found or already reviewed" })
         };
       }
-      if (action === "approved" && subResult.rows[0].artist_id) {
-        await db.query(
-          `UPDATE artists SET status = 'hidden', reviewed_at = NOW() WHERE id = $1`,
-          [subResult.rows[0].artist_id]
-        );
+      if (action === "approved") {
+        if (subResult.rows[0].artist_id) {
+          await db.query(
+            `UPDATE artists SET status = 'hidden', reviewed_at = NOW() WHERE id = $1`,
+            [subResult.rows[0].artist_id]
+          );
+        } else if (subResult.rows[0].event_id) {
+          await db.query(
+            `UPDATE events SET status = 'hidden', reviewed_at = NOW() WHERE id = $1`,
+            [subResult.rows[0].event_id]
+          );
+        }
       }
       return {
         statusCode: 200,
@@ -144,12 +151,12 @@ export const handler = async (event) => {
       };
     }
 
-    // --- Edit: mark submission reviewed; if approved, apply changes to artist ---
+    // --- Edit: mark submission reviewed; if approved, apply changes to artist or event ---
     if (type === "edit") {
       const subResult = await db.query(
         `UPDATE submissions SET status = $1, reviewed_at = NOW()
          WHERE id = $2 AND type = 'edit' AND status = 'pending'
-         RETURNING id, artist_id, raw_data`,
+         RETURNING id, artist_id, event_id, raw_data`,
         [action, id]
       );
       if (subResult.rows.length === 0) {
@@ -160,63 +167,70 @@ export const handler = async (event) => {
         };
       }
 
-      if (action === "approved" && subResult.rows[0].artist_id) {
-        const artistId = subResult.rows[0].artist_id;
+      if (action === "approved") {
         const data = subResult.rows[0].raw_data;
 
-        // Build dynamic UPDATE for only the fields that were submitted
-        const fieldMap = {
-          display_name: "display_name",
-          role: "role",
-          city: "city",
-          state: "state",
-          bio: "bio",
-          operates_in: "operates_in",
-          link_soundcloud: "link_soundcloud",
-          link_bandcamp: "link_bandcamp",
-          link_twitter: "link_twitter",
-          link_instagram: "link_instagram",
-          link_website: "link_website",
-          discord_handle: "discord_handle"
-        };
-
-        const setClauses = [];
-        const values = [];
-        let idx = 1;
-
-        for (const [field, col] of Object.entries(fieldMap)) {
-          if (data[field] !== undefined) {
-            setClauses.push(`${col} = $${idx}`);
-            values.push(data[field]);
-            idx++;
+        if (subResult.rows[0].artist_id) {
+          const artistId = subResult.rows[0].artist_id;
+          const fieldMap = {
+            display_name: "display_name", role: "role", city: "city", state: "state",
+            bio: "bio", operates_in: "operates_in", link_soundcloud: "link_soundcloud",
+            link_bandcamp: "link_bandcamp", link_twitter: "link_twitter",
+            link_instagram: "link_instagram", link_website: "link_website",
+            discord_handle: "discord_handle"
+          };
+          const setClauses = [];
+          const values = [];
+          let idx = 1;
+          for (const [field, col] of Object.entries(fieldMap)) {
+            if (data[field] !== undefined) {
+              setClauses.push(`${col} = $${idx}`);
+              values.push(data[field]);
+              idx++;
+            }
           }
-        }
-
-        if (setClauses.length > 0) {
-          setClauses.push(`reviewed_at = NOW()`);
-          values.push(artistId);
-          await db.query(
-            `UPDATE artists SET ${setClauses.join(", ")} WHERE id = $${idx}`,
-            values
-          );
-        }
-
-        // Update tags if included
-        if (Array.isArray(data.tags)) {
-          // Resolve tag names to IDs
-          const tagRows = await db.query(
-            `SELECT id FROM tags WHERE name = ANY($1)`,
-            [data.tags]
-          );
-          const tagIds = tagRows.rows.map(r => r.id);
-
-          // Replace all tags for this artist
-          await db.query(`DELETE FROM artist_tags WHERE artist_id = $1`, [artistId]);
-          for (const tagId of tagIds) {
-            await db.query(
-              `INSERT INTO artist_tags (artist_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-              [artistId, tagId]
-            );
+          if (setClauses.length > 0) {
+            setClauses.push(`reviewed_at = NOW()`);
+            values.push(artistId);
+            await db.query(`UPDATE artists SET ${setClauses.join(", ")} WHERE id = $${idx}`, values);
+          }
+          if (Array.isArray(data.tags)) {
+            const tagRows = await db.query(`SELECT id FROM tags WHERE name = ANY($1)`, [data.tags]);
+            const tagIds = tagRows.rows.map(r => r.id);
+            await db.query(`DELETE FROM artist_tags WHERE artist_id = $1`, [artistId]);
+            for (const tagId of tagIds) {
+              await db.query(`INSERT INTO artist_tags (artist_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [artistId, tagId]);
+            }
+          }
+        } else if (subResult.rows[0].event_id) {
+          const eventId = subResult.rows[0].event_id;
+          const fieldMap = {
+            title: "title", description: "description", venue: "venue", address: "address",
+            city: "city", state: "state", start_date: "start_date", end_date: "end_date",
+            start_time: "start_time", event_url: "event_url", is_online: "is_online"
+          };
+          const setClauses = [];
+          const values = [];
+          let idx = 1;
+          for (const [field, col] of Object.entries(fieldMap)) {
+            if (data[field] !== undefined) {
+              setClauses.push(`${col} = $${idx}`);
+              values.push(data[field]);
+              idx++;
+            }
+          }
+          if (setClauses.length > 0) {
+            setClauses.push(`reviewed_at = NOW()`);
+            values.push(eventId);
+            await db.query(`UPDATE events SET ${setClauses.join(", ")} WHERE id = $${idx}`, values);
+          }
+          if (Array.isArray(data.tags)) {
+            const tagRows = await db.query(`SELECT id FROM tags WHERE name = ANY($1)`, [data.tags]);
+            const tagIds = tagRows.rows.map(r => r.id);
+            await db.query(`DELETE FROM event_tags WHERE event_id = $1`, [eventId]);
+            for (const tagId of tagIds) {
+              await db.query(`INSERT INTO event_tags (event_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`, [eventId, tagId]);
+            }
           }
         }
       }

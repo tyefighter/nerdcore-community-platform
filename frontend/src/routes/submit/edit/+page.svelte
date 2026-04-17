@@ -8,9 +8,16 @@
 		'Pacific Northwest', 'Mountain West', 'Mid-Atlantic', 'South', 'Online / No Region'
 	];
 
-	const ALL_TAGS = [
+	const ARTIST_TAGS = [
 		'nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'
 	];
+
+	const EVENT_TAGS = [
+		'nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'festival', 'vpc', 'online-event', 'deadline', 'local-show'
+	];
+
+	// Mode: 'artist' or 'event'
+	let mode: 'artist' | 'event' = $state('artist');
 
 	// Step 1: lookup
 	let searchName = $state('');
@@ -18,7 +25,7 @@
 	let searchError = $state('');
 	let searchResults: any[] = $state([]);
 
-	// Step 2: edit form
+	// Step 2: artist edit form
 	let artist: any = $state(null);
 	let displayName = $state('');
 	let role = $state('');
@@ -32,8 +39,23 @@
 	let linkInstagram = $state('');
 	let linkWebsite = $state('');
 	let selectedTags: string[] = $state([]);
-	let reason = $state('');
 
+	// Step 2: event edit form
+	let eventRecord: any = $state(null);
+	let eventTitle = $state('');
+	let eventDescription = $state('');
+	let eventVenue = $state('');
+	let eventAddress = $state('');
+	let eventCity = $state('');
+	let eventState = $state('');
+	let eventStartDate = $state('');
+	let eventEndDate = $state('');
+	let eventStartTime = $state('');
+	let eventUrl = $state('');
+	let eventIsOnline = $state(false);
+	let eventTags: string[] = $state([]);
+
+	let reason = $state('');
 	let submitting = $state(false);
 	let submitted = $state(false);
 	let error = $state('');
@@ -41,18 +63,36 @@
 
 	onMount(async () => {
 		const idParam = $page.url.searchParams.get('id');
-		if (!idParam) return;
-		loadingById = true;
-		try {
-			const res = await fetch(`${PUBLIC_API_BASE_URL}/artists`);
-			if (!res.ok) throw new Error();
-			const all = await res.json();
-			const found = all.find((a: any) => String(a.id) === idParam);
-			if (found) selectArtist(found);
-		} catch {
-			// fall through to manual search
-		} finally {
-			loadingById = false;
+		const eventIdParam = $page.url.searchParams.get('event_id');
+
+		if (eventIdParam) {
+			mode = 'event';
+			loadingById = true;
+			try {
+				const res = await fetch(`${PUBLIC_API_BASE_URL}/events`);
+				if (!res.ok) throw new Error();
+				const all = await res.json();
+				const found = all.find((e: any) => String(e.id) === eventIdParam);
+				if (found) selectEvent(found);
+			} catch {
+				// fall through
+			} finally {
+				loadingById = false;
+			}
+		} else if (idParam) {
+			mode = 'artist';
+			loadingById = true;
+			try {
+				const res = await fetch(`${PUBLIC_API_BASE_URL}/artists`);
+				if (!res.ok) throw new Error();
+				const all = await res.json();
+				const found = all.find((a: any) => String(a.id) === idParam);
+				if (found) selectArtist(found);
+			} catch {
+				// fall through to manual search
+			} finally {
+				loadingById = false;
+			}
 		}
 	});
 
@@ -97,11 +137,36 @@
 		searchResults = [];
 	}
 
+	function selectEvent(e: any) {
+		eventRecord = e;
+		eventTitle = e.title || '';
+		eventDescription = e.description || '';
+		eventVenue = e.venue || '';
+		eventAddress = e.address || '';
+		eventCity = e.city || '';
+		eventState = e.state || '';
+		eventStartDate = e.start_date?.slice(0, 10) || '';
+		eventEndDate = e.end_date?.slice(0, 10) || '';
+		eventStartTime = e.start_time || '';
+		eventUrl = e.event_url || '';
+		eventIsOnline = e.is_online || false;
+		eventTags = e.tags ? [...e.tags] : [];
+		searchResults = [];
+	}
+
 	function toggleTag(tag: string) {
 		if (selectedTags.includes(tag)) {
 			selectedTags = selectedTags.filter(t => t !== tag);
 		} else {
 			selectedTags = [...selectedTags, tag];
+		}
+	}
+
+	function toggleEventTag(tag: string) {
+		if (eventTags.includes(tag)) {
+			eventTags = eventTags.filter(t => t !== tag);
+		} else {
+			eventTags = [...eventTags, tag];
 		}
 	}
 
@@ -111,28 +176,41 @@
 		error = '';
 
 		try {
-			const payload: any = {
-				artist_id: artist.id,
-				reason: reason.trim(),
-				source: 'website'
-			};
+			const payload: any = { reason: reason.trim() || undefined, source: 'website' };
 
-			// Only include fields that changed
-			if (displayName.trim() !== (artist.display_name || '')) payload.display_name = displayName.trim();
-			if (role !== (artist.role || '')) payload.role = role;
-			if (city.trim() !== (artist.city || '')) payload.city = city.trim();
-			if (state_.trim() !== (artist.state || '')) payload.state = state_.trim();
-			if (region !== (artist.region || '')) payload.region = region;
-			if (bio.trim() !== (artist.bio || '')) payload.bio = bio.trim();
-			if (linkSoundcloud.trim() !== (artist.link_soundcloud || '')) payload.link_soundcloud = linkSoundcloud.trim();
-			if (linkBandcamp.trim() !== (artist.link_bandcamp || '')) payload.link_bandcamp = linkBandcamp.trim();
-			if (linkTwitter.trim() !== (artist.link_twitter || '')) payload.link_twitter = linkTwitter.trim();
-			if (linkInstagram.trim() !== (artist.link_instagram || '')) payload.link_instagram = linkInstagram.trim();
-			if (linkWebsite.trim() !== (artist.link_website || '')) payload.link_website = linkWebsite.trim();
-
-			const origTags = (artist.tags || []).slice().sort().join(',');
-			const newTags = selectedTags.slice().sort().join(',');
-			if (origTags !== newTags) payload.tags = selectedTags;
+			if (mode === 'event' && eventRecord) {
+				payload.event_id = eventRecord.id;
+				if (eventTitle.trim() !== (eventRecord.title || '')) payload.title = eventTitle.trim();
+				if (eventDescription.trim() !== (eventRecord.description || '')) payload.description = eventDescription.trim();
+				if (eventVenue.trim() !== (eventRecord.venue || '')) payload.venue = eventVenue.trim();
+				if (eventAddress.trim() !== (eventRecord.address || '')) payload.address = eventAddress.trim();
+				if (eventCity.trim() !== (eventRecord.city || '')) payload.city = eventCity.trim();
+				if (eventState.trim() !== (eventRecord.state || '')) payload.state = eventState.trim();
+				if (eventStartDate !== (eventRecord.start_date?.slice(0, 10) || '')) payload.start_date = eventStartDate;
+				if (eventEndDate !== (eventRecord.end_date?.slice(0, 10) || '')) payload.end_date = eventEndDate;
+				if (eventStartTime !== (eventRecord.start_time || '')) payload.start_time = eventStartTime;
+				if (eventUrl.trim() !== (eventRecord.event_url || '')) payload.event_url = eventUrl.trim();
+				if (eventIsOnline !== eventRecord.is_online) payload.is_online = eventIsOnline;
+				const origTags = (eventRecord.tags || []).slice().sort().join(',');
+				const newTags = eventTags.slice().sort().join(',');
+				if (origTags !== newTags) payload.tags = eventTags;
+			} else if (mode === 'artist' && artist) {
+				payload.artist_id = artist.id;
+				if (displayName.trim() !== (artist.display_name || '')) payload.display_name = displayName.trim();
+				if (role !== (artist.role || '')) payload.role = role;
+				if (city.trim() !== (artist.city || '')) payload.city = city.trim();
+				if (state_.trim() !== (artist.state || '')) payload.state = state_.trim();
+				if (region !== (artist.region || '')) payload.region = region;
+				if (bio.trim() !== (artist.bio || '')) payload.bio = bio.trim();
+				if (linkSoundcloud.trim() !== (artist.link_soundcloud || '')) payload.link_soundcloud = linkSoundcloud.trim();
+				if (linkBandcamp.trim() !== (artist.link_bandcamp || '')) payload.link_bandcamp = linkBandcamp.trim();
+				if (linkTwitter.trim() !== (artist.link_twitter || '')) payload.link_twitter = linkTwitter.trim();
+				if (linkInstagram.trim() !== (artist.link_instagram || '')) payload.link_instagram = linkInstagram.trim();
+				if (linkWebsite.trim() !== (artist.link_website || '')) payload.link_website = linkWebsite.trim();
+				const origTags = (artist.tags || []).slice().sort().join(',');
+				const newTags = selectedTags.slice().sort().join(',');
+				if (origTags !== newTags) payload.tags = selectedTags;
+			}
 
 			const res = await fetch(`${PUBLIC_API_BASE_URL}/submissions/edit`, {
 				method: 'POST',
@@ -155,6 +233,7 @@
 
 	function reset() {
 		artist = null;
+		eventRecord = null;
 		searchName = '';
 		submitted = false;
 		error = '';
@@ -168,13 +247,13 @@
 
 <div class="page">
 	<header>
-		<a href="/" class="back">← Home</a>
-		<h1>Request Artist Edit</h1>
-		<p class="subtitle">Suggest a correction or update to an artist's listing.</p>
+		<a href={mode === 'event' ? '/events' : '/artists'} class="back">← {mode === 'event' ? 'Events' : 'Artist Map'}</a>
+		<h1>{mode === 'event' ? 'Request Event Edit' : 'Request Artist Edit'}</h1>
+		<p class="subtitle">Suggest a correction or update to this {mode === 'event' ? 'event' : 'artist'}'s listing.</p>
 	</header>
 
 	{#if loadingById}
-		<p class="loading">Loading artist...</p>
+		<p class="loading">Loading {mode === 'event' ? 'event' : 'artist'}...</p>
 	{:else if submitted}
 		<div class="success">
 			<p class="success-msg">Edit request received. A moderator will review it shortly.</p>
@@ -183,6 +262,92 @@
 				<a href="/">Back to home</a>
 			</div>
 		</div>
+
+	{:else if mode === 'event' && eventRecord}
+		<!-- Event edit form -->
+		<div class="selected-banner">
+			Editing: <strong>{eventRecord.title}</strong>
+		</div>
+
+		<form onsubmit={handleSubmit}>
+			<div class="field">
+				<label for="event_title">Title</label>
+				<input id="event_title" type="text" bind:value={eventTitle} />
+			</div>
+
+			<div class="field">
+				<label for="event_desc">Description</label>
+				<textarea id="event_desc" bind:value={eventDescription} rows="3"></textarea>
+			</div>
+
+			<div class="field">
+				<label for="event_venue">Venue</label>
+				<input id="event_venue" type="text" bind:value={eventVenue} />
+			</div>
+
+			<div class="field">
+				<label for="event_address">Full Address</label>
+				<input id="event_address" type="text" bind:value={eventAddress} placeholder="123 Main St" />
+			</div>
+
+			<div class="field-row">
+				<div class="field">
+					<label for="event_city">City</label>
+					<input id="event_city" type="text" bind:value={eventCity} />
+				</div>
+				<div class="field">
+					<label for="event_state">State</label>
+					<input id="event_state" type="text" bind:value={eventState} maxlength={2} />
+				</div>
+			</div>
+
+			<div class="field-row">
+				<div class="field">
+					<label for="event_start">Start Date</label>
+					<input id="event_start" type="date" bind:value={eventStartDate} />
+				</div>
+				<div class="field">
+					<label for="event_end">End Date</label>
+					<input id="event_end" type="date" bind:value={eventEndDate} />
+				</div>
+				<div class="field">
+					<label for="event_time">Start Time</label>
+					<input id="event_time" type="time" bind:value={eventStartTime} />
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="event_url">Event URL</label>
+				<input id="event_url" type="url" bind:value={eventUrl} placeholder="https://..." />
+			</div>
+
+			<div class="field">
+				<label>Tags</label>
+				<div class="tag-group">
+					{#each EVENT_TAGS as tag}
+						<button
+							type="button"
+							class="tag-btn"
+							class:active={eventTags.includes(tag)}
+							onclick={() => toggleEventTag(tag)}
+						>{tag}</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="field">
+				<label for="reason">Reason for edit <span class="optional">(optional)</span></label>
+				<textarea id="reason" bind:value={reason} placeholder="What needs to be updated and why?" rows="3"></textarea>
+			</div>
+
+			{#if error}
+				<p class="error">{error}</p>
+			{/if}
+
+			<button type="submit" disabled={submitting}>
+				{submitting ? 'Submitting...' : 'Submit Edit Request'}
+			</button>
+		</form>
 
 	{:else if !artist}
 		<!-- Step 1: Search -->
@@ -470,8 +635,17 @@
 
 	.required { color: #983cba; }
 
+	.optional {
+		color: #555;
+		font-size: 0.7rem;
+		text-transform: none;
+		letter-spacing: 0;
+	}
+
 	input[type="text"],
 	input[type="url"],
+	input[type="date"],
+	input[type="time"],
 	textarea,
 	select {
 		background: #111;
@@ -484,6 +658,7 @@
 		width: 100%;
 		box-sizing: border-box;
 		resize: vertical;
+		color-scheme: dark;
 	}
 
 	input:focus, textarea:focus, select:focus {

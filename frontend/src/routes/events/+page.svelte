@@ -166,6 +166,10 @@
 						{#if selectedEvent.event_url}
 							<a href={selectedEvent.event_url} target="_blank" class="event-link">More info →</a>
 						{/if}
+						<div class="mod-links">
+							<a href="/submit/edit?event_id={selectedEvent.id}">Request edit</a>
+							<a href="/submit/removal?event_id={selectedEvent.id}&event_title={encodeURIComponent(selectedEvent.title)}">Request removal</a>
+						</div>
 					</div>
 				{:else}
 					<div class="instructions">
@@ -437,6 +441,22 @@
 	}
 
 	.event-link:hover { text-decoration: underline; }
+
+	.mod-links {
+		display: flex;
+		gap: 1rem;
+		margin-top: 1rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid #1a1a1a;
+	}
+
+	.mod-links a {
+		font-size: 0.7rem;
+		color: #555;
+		text-decoration: none;
+	}
+
+	.mod-links a:hover { color: #aaa; }
 
 	.back {
 		background: none;
