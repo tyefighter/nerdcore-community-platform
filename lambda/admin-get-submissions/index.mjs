@@ -146,6 +146,17 @@ export const handler = async (event) => {
       ORDER BY s.id ASC
     `);
 
+    // Recent approvals (last 10 across artists and events)
+    const recentResult = await db.query(`
+      SELECT name, type, reviewed_at FROM (
+        SELECT display_name AS name, 'artist' AS type, reviewed_at FROM artists WHERE status = 'approved' AND reviewed_at IS NOT NULL
+        UNION ALL
+        SELECT title AS name, 'event' AS type, reviewed_at FROM events WHERE status = 'approved' AND reviewed_at IS NOT NULL
+      ) combined
+      ORDER BY reviewed_at DESC
+      LIMIT 10
+    `);
+
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
@@ -153,7 +164,8 @@ export const handler = async (event) => {
         artists: artistsResult.rows,
         events: eventsResult.rows,
         removals: removalsResult.rows,
-        edits: editsResult.rows
+        edits: editsResult.rows,
+        recentApprovals: recentResult.rows
       })
     };
 

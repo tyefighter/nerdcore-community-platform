@@ -51,10 +51,18 @@
 		raw_data: any;
 	}
 
+	interface RecentApproval {
+		name: string;
+		type: 'artist' | 'event';
+		reviewed_at: string;
+	}
+
 	let artists: ArtistSubmission[] = $state([]);
 	let events: EventSubmission[] = $state([]);
 	let removals: RemovalRequest[] = $state([]);
 	let edits: EditRequest[] = $state([]);
+	let recentApprovals: RecentApproval[] = $state([]);
+	let showRecent = $state(false);
 	let loading = $state(true);
 	let error = $state('');
 	let reviewing: string | null = $state(null);
@@ -80,6 +88,7 @@
 			events = data.events;
 			removals = data.removals || [];
 			edits = data.edits || [];
+			recentApprovals = data.recentApprovals || [];
 		} catch (e) {
 			error = 'Failed to load submissions.';
 		} finally {
@@ -334,6 +343,30 @@
 				{/if}
 			</section>
 
+			<!-- Recent Approvals -->
+			<section>
+				<h2>
+					<button class="toggle-recent" onclick={() => showRecent = !showRecent}>
+						Recent Approvals {showRecent ? '▲' : '▼'}
+					</button>
+				</h2>
+				{#if showRecent}
+					{#if recentApprovals.length === 0}
+						<p class="empty">No approvals yet.</p>
+					{:else}
+						<div class="recent-list">
+							{#each recentApprovals as item}
+								<div class="recent-row">
+									<span class="recent-type" class:artist={item.type === 'artist'} class:event={item.type === 'event'}>{item.type}</span>
+									<span class="recent-name">{item.name}</span>
+									<span class="recent-date">{formatDate(item.reviewed_at)}</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				{/if}
+			</section>
+
 		</div>
 	{/if}
 </div>
@@ -551,4 +584,57 @@
 	}
 
 	.error { color: #ff006e; }
+
+	.toggle-recent {
+		background: none;
+		border: none;
+		font-family: inherit;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: #555;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	.toggle-recent:hover { color: #aaa; }
+
+	.recent-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		margin-top: 0.5rem;
+	}
+
+	.recent-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.78rem;
+		padding: 0.4rem 0;
+		border-bottom: 1px solid #111;
+	}
+
+	.recent-type {
+		font-size: 0.65rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 0.15rem 0.4rem;
+		border-radius: 3px;
+		flex-shrink: 0;
+	}
+
+	.recent-type.artist { background: #1e0f2e; color: #983cba; }
+	.recent-type.event  { background: #0d1f0d; color: #39ff14; }
+
+	.recent-name {
+		flex: 1;
+		color: #ccc;
+	}
+
+	.recent-date {
+		color: #444;
+		font-size: 0.72rem;
+		flex-shrink: 0;
+	}
 </style>
