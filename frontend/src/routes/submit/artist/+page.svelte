@@ -13,7 +13,7 @@
 
 	const ROLES = ['vocalist', 'producer', 'band', 'visualist', 'other'];
 
-	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'];
+	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'other'];
 
 	let display_name = $state('');
 	let selectedRoles: string[] = $state([]);
@@ -58,6 +58,10 @@
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
+		if (selectedTags.length === 0) {
+			error = 'Please select at least one tag.';
+			return;
+		}
 		submitting = true;
 		error = '';
 
@@ -195,7 +199,8 @@
 				</div>
 
 				<div class="tag-section">
-					<p class="tag-label">Tags</p>
+					<p class="tag-label">Tags <span class="required">*</span></p>
+					<p class="tag-note">Please choose a tag that best fits your music. Untagged artists will appear under "Other" on the map and in filters.</p>
 					<div class="tags">
 						{#each AVAILABLE_TAGS as tag}
 							<button
@@ -373,6 +378,17 @@
 		font-size: 0.8rem;
 		color: #aaa;
 		margin: 0;
+	}
+
+	.tag-note {
+		font-size: 0.72rem;
+		color: #666;
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	.required {
+		color: #983cba;
 	}
 
 	.tags {
