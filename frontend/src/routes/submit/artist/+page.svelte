@@ -13,7 +13,7 @@
 
 	const ROLES = ['vocalist', 'producer', 'band', 'visualist', 'other'];
 
-	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'other'];
+	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'other'];
 
 	let display_name = $state('');
 	let selectedRoles: string[] = $state([]);
