@@ -134,20 +134,21 @@
 					<input type="text" bind:value={display_name} required placeholder="MC Example" />
 				</label>
 
-				<div class="row">
-					<label>
-						City *
-						<input type="text" bind:value={city} required placeholder="Richmond" />
-					</label>
-					<label>
-						State *
-						<input type="text" bind:value={state_val} required placeholder="VA" maxlength={2} class="short" />
-					</label>
-				</div>
 			</section>
 
 			<section>
 				<h2>Optional</h2>
+
+				<div class="row">
+					<label>
+						City
+						<input type="text" bind:value={city} placeholder="Richmond" />
+					</label>
+					<label>
+						State
+						<input type="text" bind:value={state_val} placeholder="VA" maxlength={2} class="short" />
+					</label>
+				</div>
 
 				<label>
 					Bio
