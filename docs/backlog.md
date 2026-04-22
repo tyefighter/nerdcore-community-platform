@@ -127,8 +127,12 @@
 - [ ] Add "musician liaison" category to the map — for community members who support artists (housing, equipment, logistics) but aren't performers themselves. Needs more design thought before building.
 - [x] Add a friendly note above the tags section on the artist submission form and make at least one tag mandatory. Tags updated to: nerdcore, chiptune, vgm, visualist, hip-hop, other.
 
+### Artist Map — Future Ideas
+- [ ] Cluster map markers — group nearby artists into a count bubble using Mapbox's built-in clustering. Prevents markers stacking on top of each other in the same city. Gets more useful as the directory grows.
+- [ ] Approximate location markers — artists who provide state but no city get a pink marker placed at the state capital. Artist detail panel shows "Location approximate — no city provided". Admin approval geocodes state capital as fallback when city is empty.
+
 ### Nice-to-Haves
-- [ ] Discord notification to mod channel when a new submission arrives
+- [ ] Discord webhook notification to personal dev channel when a new submission arrives (approval needed)
 - [ ] Discord notification to submitter when their submission is approved/rejected
 - [ ] "Show nearby events" toggle on artist map — overlays upcoming event dots (next 30–60 days) on top of artist dots, off by default to keep the map clean
 - [ ] Artist list filters to only show artists visible in current map viewport — updates on map move via `map.on('moveend')` + `map.getBounds()`. Artists with no coordinates hidden from list while viewport filter is active (or shown in a separate "location unknown" section)

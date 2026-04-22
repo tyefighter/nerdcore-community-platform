@@ -32,6 +32,7 @@
 	let filterOpen = $state(false);
 	let navOpen = $state(false);
 	let viewportBounds: mapboxgl.LngLatBounds | null = $state(null);
+	let viewportFilterActive = $state(false);
 
 	const GENRES = ['Nerdcore', 'VGM', 'Chiptune', 'Visualist', 'Other'];
 
@@ -70,6 +71,11 @@
 			const visible = !activeFilter || filteredArtists.includes(artist);
 			el.style.display = visible ? 'block' : 'none';
 		}
+	}
+
+	function toggleViewportFilter() {
+		viewportFilterActive = !viewportFilterActive;
+		viewportBounds = viewportFilterActive ? map.getBounds() : null;
 	}
 
 	const GENRE_COLORS: Record<string, string> = {
@@ -112,11 +118,10 @@
 		map.addControl(new mapboxgl.NavigationControl());
 
 		map.on('moveend', () => {
-			viewportBounds = map.getBounds();
+			if (viewportFilterActive) viewportBounds = map.getBounds();
 		});
 
 		map.on('load', () => {
-			viewportBounds = map.getBounds();
 			// Add a marker for each artist we have coordinates for
 			artists.forEach((artist) => {
 				if (!artist.lat || !artist.lng) return;
@@ -232,6 +237,9 @@
 					<div class="panel-header">
 						<span>Artists ({filteredArtists.length}{noLocationArtists.length > 0 ? ` + ${noLocationArtists.length} unlisted` : ''})</span>
 						<div class="filter-wrap">
+							<button class="filter-btn" class:active={viewportFilterActive} onclick={toggleViewportFilter} title="Filter list to visible map area">
+								{viewportFilterActive ? '⊙ Map view' : '⊙ All'}
+							</button>
 							<button class="filter-btn" class:active={activeFilter} onclick={() => filterOpen = !filterOpen}>
 								{activeFilter ? activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1) : 'Filter'} ▾
 							</button>
