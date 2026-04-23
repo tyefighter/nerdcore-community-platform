@@ -15,10 +15,23 @@
 
 	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'other'];
 
+	const COUNTRIES = [
+		'United States', 'United Kingdom', 'Canada', 'Australia', 'New Zealand',
+		'Ireland', 'Germany', 'France', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
+		'Finland', 'Belgium', 'Switzerland', 'Austria', 'Spain', 'Italy', 'Portugal',
+		'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Greece', 'Russia',
+		'Japan', 'South Korea', 'China', 'India', 'Singapore', 'Philippines',
+		'Brazil', 'Mexico', 'Argentina', 'Colombia', 'Chile', 'Peru',
+		'South Africa', 'Nigeria', 'Kenya', 'Egypt',
+		'Israel', 'Turkey', 'UAE', 'Saudi Arabia',
+		'Other'
+	];
+
 	let display_name = $state('');
 	let selectedRoles: string[] = $state([]);
 	let city = $state('');
 	let state_val = $state('');
+	let country = $state('');
 	let region = $state('');
 	let bio = $state('');
 	let link_soundcloud = $state('');
@@ -74,6 +87,7 @@
 					roles: selectedRoles.length > 0 ? selectedRoles : undefined,
 					city,
 					state: state_val,
+					country: country || undefined,
 					region: region || undefined,
 					bio: bio || undefined,
 					link_soundcloud: normalizeUrl(link_soundcloud),
@@ -122,7 +136,7 @@
 			<h2>Submission received</h2>
 			<p>Your artist profile is in the moderation queue. A moderator will review it before it appears publicly.</p>
 			<div class="success-actions">
-				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; region = ''; bio = ''; link_soundcloud = ''; link_bandcamp = ''; link_twitter = ''; link_instagram = ''; link_website = ''; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
+				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; country = ''; region = ''; bio = ''; link_soundcloud = ''; link_bandcamp = ''; link_twitter = ''; link_instagram = ''; link_website = ''; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
 				<a href="/artists">View artist map</a>
 			</div>
 		</div>
@@ -146,13 +160,23 @@
 				<div class="row">
 					<label>
 						City
-						<input type="text" bind:value={city} placeholder="Richmond" />
+						<input type="text" bind:value={city} placeholder="London" />
 					</label>
 					<label>
-						State
-						<input type="text" bind:value={state_val} placeholder="VA" maxlength={2} class="short" />
+						State / Province / Region
+						<input type="text" bind:value={state_val} placeholder="e.g. VA, Ontario, West Midlands" />
 					</label>
 				</div>
+
+				<label>
+					Country
+					<select bind:value={country}>
+						<option value="">— Select a country (optional) —</option>
+						{#each COUNTRIES as c}
+							<option value={c}>{c}</option>
+						{/each}
+					</select>
+				</label>
 
 				<label>
 					Bio

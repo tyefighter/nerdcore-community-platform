@@ -7,7 +7,8 @@
 		display_name: string;
 		role: string;
 		city: string;
-		state: string;
+		state: string | null;
+		country: string | null;
 		region: string;
 		bio: string;
 		link_soundcloud: string | null;
@@ -96,9 +97,10 @@
 		}
 	}
 
-	async function geocode(city: string, state: string): Promise<{ lat: number, lng: number } | null> {
+	async function geocode(city: string, state: string | null, country: string | null): Promise<{ lat: number, lng: number } | null> {
 		try {
-			const q = encodeURIComponent(`${city}, ${state}, USA`);
+			const parts = [city, state, country || 'United States'].filter(Boolean);
+			const q = encodeURIComponent(parts.join(', '));
 			const res = await fetch(
 				`https://api.mapbox.com/geocoding/v5/mapbox.places/${q}.json?types=place&limit=1&access_token=${PUBLIC_MAPBOX_TOKEN}`
 			);
@@ -115,8 +117,8 @@
 		reviewing = `${type}-${id}`;
 		try {
 			let coords: { lat: number, lng: number } | null = null;
-			if (type === 'artist' && action === 'approved' && artist?.city && artist?.state) {
-				coords = await geocode(artist.city, artist.state);
+			if (type === 'artist' && action === 'approved' && artist?.city) {
+				coords = await geocode(artist.city, artist.state, artist.country);
 			}
 
 			const res = await fetch(`${PUBLIC_API_BASE_URL}/admin/review`, {

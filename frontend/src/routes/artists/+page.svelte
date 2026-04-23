@@ -8,7 +8,8 @@
 		display_name: string;
 		role: string;
 		city: string;
-		state: string;
+		state: string | null;
+		country: string | null;
 		region: string;
 		operates_in: string;
 		bio: string;
@@ -206,7 +207,10 @@
 					<div class="artist-detail">
 						<h2>{selectedArtist.display_name}</h2>
 						<p class="role">{selectedArtist.role}</p>
-						<p class="location">{selectedArtist.city}, {selectedArtist.state} · {selectedArtist.region}</p>
+						<p class="location">
+							{[selectedArtist.city, selectedArtist.state, selectedArtist.country].filter(Boolean).join(', ')}
+							{#if selectedArtist.region} · {selectedArtist.region}{/if}
+						</p>
 						{#if selectedArtist.bio}
 							<p class="bio">{selectedArtist.bio}</p>
 						{/if}
