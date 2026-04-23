@@ -174,10 +174,10 @@ export const handler = async (event) => {
           const artistId = subResult.rows[0].artist_id;
           const fieldMap = {
             display_name: "display_name", role: "role", city: "city", state: "state",
-            bio: "bio", operates_in: "operates_in", link_soundcloud: "link_soundcloud",
-            link_bandcamp: "link_bandcamp", link_twitter: "link_twitter",
-            link_instagram: "link_instagram", link_website: "link_website",
-            discord_handle: "discord_handle"
+            country: "country", bio: "bio", operates_in: "operates_in",
+            link_soundcloud: "link_soundcloud", link_bandcamp: "link_bandcamp",
+            link_twitter: "link_twitter", link_instagram: "link_instagram",
+            link_website: "link_website", discord_handle: "discord_handle"
           };
           const setClauses = [];
           const values = [];

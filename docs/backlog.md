@@ -135,5 +135,6 @@
 - [ ] Discord webhook notification to personal dev channel when a new submission arrives (approval needed)
 - [ ] Discord notification to submitter when their submission is approved/rejected
 - [ ] "Show nearby events" toggle on artist map — overlays upcoming event dots (next 30–60 days) on top of artist dots, off by default to keep the map clean
-- [ ] Artist list filters to only show artists visible in current map viewport — updates on map move via `map.on('moveend')` + `map.getBounds()`. Artists with no coordinates hidden from list while viewport filter is active (or shown in a separate "location unknown" section)
+- [x] Artist list filters to only show artists visible in current map viewport — opt-in toggle button, off by default
 - [ ] Collapsible/hideable map on mobile — lets users browse the artist list without the map taking up screen space
+- [ ] Duplicate submission detection — fuzzy match submitted artist name against existing approved/pending records; warn submitter on form if match found; flag in admin queue with link to existing record for side-by-side comparison. Don't block submission — let admin make the final call.

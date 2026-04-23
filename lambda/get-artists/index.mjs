@@ -77,6 +77,7 @@ export const handler = async (event) => {
         a.role,
         a.city,
         a.state,
+        a.country,
         r.name AS region,
         a.operates_in,
         a.bio,

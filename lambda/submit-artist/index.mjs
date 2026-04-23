@@ -91,16 +91,17 @@ export const handler = async (event) => {
     // Insert into artists table with pending status
     const result = await db.query(
       `INSERT INTO artists (
-        display_name, role, city, state, region_id, operates_in, bio,
+        display_name, role, city, state, country, region_id, operates_in, bio,
         link_soundcloud, link_bandcamp, link_twitter, link_instagram, link_website,
         discord_handle, status
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'pending')
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'pending')
       RETURNING id`,
       [
         body.display_name.trim(),
         body.roles?.length > 0 ? body.roles.join(", ") : null,
         body.city?.trim() || null,
-        body.state?.toUpperCase() || null,
+        body.state?.trim() || null,
+        body.country?.trim() || null,
         regionId,
         body.operates_in?.trim() || null,
         body.bio?.trim() || null,

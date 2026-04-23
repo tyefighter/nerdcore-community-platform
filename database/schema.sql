@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS artists (
     role            VARCHAR(100),                -- optional; comma-separated e.g. "vocalist, producer"
     city            VARCHAR(100),
     state           VARCHAR(50),
+    country         VARCHAR(100),
     region_id       INTEGER REFERENCES regions(id),
     operates_in     TEXT,                       -- free text, e.g. "East Coast, Southeast"
     bio             TEXT,
