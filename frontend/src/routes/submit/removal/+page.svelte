@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
+	import { notifyMod } from '$lib/notify';
 
 	let artistName = $state('');
 	let artistId: number | null = $state(null);
@@ -52,6 +53,9 @@
 				const data = await res.json();
 				throw new Error(data.error || `HTTP ${res.status}`);
 			}
+
+			const subjectName = isEvent ? (eventTitle || `Event #${eventId}`) : (artistName || 'Unknown artist');
+			notifyMod('removal', subjectName, isEvent ? 'Event removal' : 'Artist removal');
 
 			submitted = true;
 		} catch (e: any) {

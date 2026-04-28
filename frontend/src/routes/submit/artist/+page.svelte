@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
+	import { notifyMod } from '$lib/notify';
 
 	const REGIONS = [
 		'Northeast',
@@ -148,6 +149,9 @@
 				error = body.error || `Submission failed (${res.status})`;
 				return;
 			}
+
+			const locationParts = [city, state_val, country].filter(Boolean);
+			notifyMod('artist', display_name, locationParts.length > 0 ? locationParts.join(', ') : undefined);
 
 			success = true;
 		} catch {

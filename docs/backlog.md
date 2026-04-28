@@ -113,6 +113,7 @@
 - [x] Auto-prepend https:// to URL fields if missing
 - [x] Ko-fi donation link in all navbars
 - [ ] Admin: "Suggested Tags" panel — query raw_data JSONB across all submissions, show each unique suggested tag + count (new Lambda endpoint + admin UI section)
+- [ ] Expand social media link support on artist submission form. Add columns for facebook, bluesky, mastodon, twitch, linktree (twitter and instagram already exist). Replace hardcoded link fields in UI with a dropdown-based pattern: pick a platform, URL field appears, "+ Add another" to add more, "X" to remove. Behind the scenes, dropdown choice maps to the corresponding column — no schema migration needed for existing data. Update submit-artist Lambda, get-artists Lambda, and artist detail panel on the map.
 
 ### Pages & Content
 - [ ] About Us page — explain what the platform is, who runs it, how to get involved
@@ -130,9 +131,10 @@
 ### Artist Map — Future Ideas
 - [ ] Cluster map markers — group nearby artists into a count bubble using Mapbox's built-in clustering. Prevents markers stacking on top of each other in the same city. Gets more useful as the directory grows.
 - [ ] Approximate location markers — artists who provide state but no city get a pink marker placed at the state capital. Artist detail panel shows "Location approximate — no city provided". Admin approval geocodes state capital as fallback when city is empty.
+- [ ] Add Venue support — venues appear on the same map as artists in their own color. Submission flow uses the same form as artists with a dropdown to pick Artist vs Venue (form fields conditional on selection). Venue fields: name, address, website/social media. Anyone can submit. Goes through the moderation queue like artists. Implementation note: simplest path is a `type` column on the artists table (artist|venue) plus an `address` column for venues — keeps the same Lambda + map code with minimal branching. Map detail panel and filters need a "Venues" option added.
 
 ### Nice-to-Haves
-- [ ] Discord webhook notification to personal dev channel when a new submission arrives (approval needed)
+- [x] Discord webhook notification to personal dev channel when a new submission arrives. SvelteKit /api/notify endpoint posts to a webhook stored in DISCORD_WEBHOOK_URL Cloudflare env var. Each submission flow (artist, event, edit, removal) calls notifyMod() after a successful submission.
 - [ ] Discord notification to submitter when their submission is approved/rejected
 - [ ] "Show nearby events" toggle on artist map — overlays upcoming event dots (next 30–60 days) on top of artist dots, off by default to keep the map clean
 - [x] Artist list filters to only show artists visible in current map viewport — opt-in toggle button, off by default

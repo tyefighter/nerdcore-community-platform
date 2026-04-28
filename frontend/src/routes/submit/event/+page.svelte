@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { PUBLIC_API_BASE_URL } from '$env/static/public';
+	import { notifyMod } from '$lib/notify';
 
 	const REGIONS = [
 		'Northeast',
@@ -112,6 +113,9 @@
 				error = body.error || `Submission failed (${res.status})`;
 				return;
 			}
+
+			const detailParts = [start_date, is_online ? 'Online' : [city, state_val].filter(Boolean).join(', ')].filter(Boolean);
+			notifyMod('event', title, detailParts.length > 0 ? detailParts.join(' · ') : undefined);
 
 			success = true;
 		} catch {
