@@ -27,6 +27,25 @@
 		'Other'
 	];
 
+	const LINK_PLATFORMS = [
+		{ value: 'soundcloud', label: 'SoundCloud',     placeholder: 'soundcloud.com/yourname' },
+		{ value: 'bandcamp',   label: 'Bandcamp',       placeholder: 'yourname.bandcamp.com' },
+		{ value: 'twitter',    label: 'Twitter / X',    placeholder: 'twitter.com/yourname' },
+		{ value: 'instagram',  label: 'Instagram',      placeholder: 'instagram.com/yourname' },
+		{ value: 'website',    label: 'Website',        placeholder: 'yoursite.com' },
+		{ value: 'facebook',   label: 'Facebook',       placeholder: 'facebook.com/yourpage' },
+		{ value: 'bluesky',    label: 'BlueSky',        placeholder: 'bsky.app/profile/yourname' },
+		{ value: 'mastodon',   label: 'Mastodon',       placeholder: 'mastodon.social/@yourname' },
+		{ value: 'twitch',     label: 'Twitch',         placeholder: 'twitch.tv/yourname' },
+		{ value: 'linktree',   label: 'Linktree',       placeholder: 'linktr.ee/yourname' },
+		{ value: 'patreon',    label: 'Patreon',        placeholder: 'patreon.com/yourname' },
+		{ value: 'youtube',    label: 'YouTube',        placeholder: 'youtube.com/@yourname' },
+		{ value: 'discord',    label: 'Discord',        placeholder: 'discord.gg/yourinvite' },
+		{ value: 'other',      label: 'Other',          placeholder: 'paste your URL here' }
+	];
+
+	interface LinkEntry { platform: string; url: string; label: string; }
+
 	let display_name = $state('');
 	let selectedRoles: string[] = $state([]);
 	let city = $state('');
@@ -34,11 +53,7 @@
 	let country = $state('');
 	let region = $state('');
 	let bio = $state('');
-	let link_soundcloud = $state('');
-	let link_bandcamp = $state('');
-	let link_twitter = $state('');
-	let link_instagram = $state('');
-	let link_website = $state('');
+	let links: LinkEntry[] = $state([{ platform: '', url: '', label: '' }]);
 	let selectedTags: string[] = $state([]);
 	let suggested_tag = $state('');
 
@@ -69,6 +84,38 @@
 		return `https://${trimmed}`;
 	}
 
+	function addLink() {
+		links = [...links, { platform: '', url: '', label: '' }];
+	}
+
+	function removeLink(idx: number) {
+		links = links.filter((_, i) => i !== idx);
+		if (links.length === 0) addLink();
+	}
+
+	// Platforms already chosen on other rows — used to disable duplicates in dropdowns.
+	// 'other' can be picked multiple times since each one is a custom platform.
+	function platformTaken(platform: string, currentIdx: number): boolean {
+		if (!platform || platform === 'other') return false;
+		return links.some((l, i) => i !== currentIdx && l.platform === platform);
+	}
+
+	function buildLinkPayload() {
+		const payload: Record<string, string | undefined> = {};
+		const others: { label: string; url: string }[] = [];
+		for (const entry of links) {
+			const url = normalizeUrl(entry.url);
+			if (!url || !entry.platform) continue;
+			if (entry.platform === 'other') {
+				const label = entry.label.trim();
+				if (label) others.push({ label, url });
+			} else {
+				payload[`link_${entry.platform}`] = url;
+			}
+		}
+		return { ...payload, links_other: others.length > 0 ? others : undefined };
+	}
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		if (selectedTags.length === 0) {
@@ -90,11 +137,7 @@
 					country: country || undefined,
 					region: region || undefined,
 					bio: bio || undefined,
-					link_soundcloud: normalizeUrl(link_soundcloud),
-					link_bandcamp: normalizeUrl(link_bandcamp),
-					link_twitter: normalizeUrl(link_twitter),
-					link_instagram: normalizeUrl(link_instagram),
-					link_website: normalizeUrl(link_website),
+					...buildLinkPayload(),
 					tags: selectedTags.length > 0 ? selectedTags : undefined,
 					suggested_tag: suggested_tag.trim() || undefined
 				})
@@ -136,7 +179,7 @@
 			<h2>Submission received</h2>
 			<p>Your artist profile is in the moderation queue. A moderator will review it before it appears publicly.</p>
 			<div class="success-actions">
-				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; country = ''; region = ''; bio = ''; link_soundcloud = ''; link_bandcamp = ''; link_twitter = ''; link_instagram = ''; link_website = ''; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
+				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; country = ''; region = ''; bio = ''; links = [{ platform: '', url: '', label: '' }]; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
 				<a href="/artists">View artist map</a>
 			</div>
 		</div>
@@ -183,30 +226,30 @@
 					<textarea bind:value={bio} rows={4} placeholder="Tell the community about yourself..."></textarea>
 				</label>
 
-				<label>
-					SoundCloud URL
-					<input type="text" bind:value={link_soundcloud} placeholder="soundcloud.com/yourname" />
-				</label>
-
-				<label>
-					Bandcamp URL
-					<input type="text" bind:value={link_bandcamp} placeholder="yourname.bandcamp.com" />
-				</label>
-
-				<label>
-					Twitter / X URL
-					<input type="text" bind:value={link_twitter} placeholder="twitter.com/yourname" />
-				</label>
-
-				<label>
-					Instagram URL
-					<input type="text" bind:value={link_instagram} placeholder="instagram.com/yourname" />
-				</label>
-
-				<label>
-					Website URL
-					<input type="text" bind:value={link_website} placeholder="yoursite.com" />
-				</label>
+				<div class="links-section">
+					<p class="tag-label">Links <span class="optional">(optional — add as many as you'd like)</span></p>
+					{#each links as entry, idx}
+						<div class="link-row">
+							<select bind:value={entry.platform} class="link-platform">
+								<option value="">— pick a platform —</option>
+								{#each LINK_PLATFORMS as p}
+									<option value={p.value} disabled={platformTaken(p.value, idx)}>{p.label}</option>
+								{/each}
+							</select>
+							{#if entry.platform === 'other'}
+								<input type="text" bind:value={entry.label} class="link-label" placeholder="Label (e.g. YouTube, Patreon)" maxlength={50} />
+							{/if}
+							<input
+								type="text"
+								bind:value={entry.url}
+								class="link-url"
+								placeholder={LINK_PLATFORMS.find((p) => p.value === entry.platform)?.placeholder ?? 'URL'}
+							/>
+							<button type="button" class="link-remove" onclick={() => removeLink(idx)} aria-label="Remove link">✕</button>
+						</div>
+					{/each}
+					<button type="button" class="link-add" onclick={addLink}>+ Add another link</button>
+				</div>
 
 				<div class="tag-section">
 					<p class="tag-label">Role <span class="optional">(optional — select all that apply)</span></p>
@@ -390,6 +433,83 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.links-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.link-row {
+		display: grid;
+		grid-template-columns: 140px 1fr auto;
+		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.link-row:has(.link-label) {
+		grid-template-columns: 140px 160px 1fr auto;
+	}
+
+	.link-platform,
+	.link-label,
+	.link-url {
+		font-size: 0.85rem;
+		padding: 0.5rem 0.6rem;
+	}
+
+	.link-remove {
+		background: none;
+		border: 1px solid #2a2a2a;
+		color: #666;
+		font-family: inherit;
+		font-size: 0.8rem;
+		padding: 0.4rem 0.65rem;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.link-remove:hover {
+		border-color: #ff006e;
+		color: #ff006e;
+	}
+
+	.link-add {
+		background: none;
+		border: 1px dashed #2a2a2a;
+		color: #888;
+		font-family: inherit;
+		font-size: 0.8rem;
+		padding: 0.55rem;
+		border-radius: 4px;
+		cursor: pointer;
+		align-self: flex-start;
+		margin-top: 0.25rem;
+	}
+
+	.link-add:hover {
+		border-color: #983cba;
+		color: #983cba;
+	}
+
+	@media (max-width: 600px) {
+		.link-row {
+			grid-template-columns: 1fr auto;
+		}
+		.link-row:has(.link-label) {
+			grid-template-columns: 1fr auto;
+		}
+		.link-platform, .link-label, .link-url {
+			grid-column: 1 / -1;
+		}
+		.link-remove {
+			grid-column: 2;
+			grid-row: 1;
+		}
+		.link-platform {
+			grid-column: 1;
+		}
 	}
 
 	.suggest-label {

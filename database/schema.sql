@@ -79,6 +79,15 @@ CREATE TABLE IF NOT EXISTS artists (
     link_twitter    VARCHAR(300),
     link_instagram  VARCHAR(300),
     link_website    VARCHAR(300),
+    link_facebook   VARCHAR(300),
+    link_bluesky    VARCHAR(300),
+    link_mastodon   VARCHAR(300),
+    link_twitch     VARCHAR(300),
+    link_linktree   VARCHAR(300),
+    link_patreon    VARCHAR(300),
+    link_youtube    VARCHAR(300),
+    link_discord    VARCHAR(300),
+    links_other     JSONB,                       -- array of {label, url} for platforms not in our dropdown
     discord_handle  VARCHAR(100),               -- stored but not displayed publicly
     status          VARCHAR(20) NOT NULL DEFAULT 'pending'
                         CHECK (status IN ('pending', 'approved', 'rejected', 'hidden')),

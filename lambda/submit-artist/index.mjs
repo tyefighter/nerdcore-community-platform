@@ -88,13 +88,22 @@ export const handler = async (event) => {
       ]
     );
 
+    // Filter links_other to keep only entries with both label and url
+    const linksOther = Array.isArray(body.links_other)
+      ? body.links_other
+          .filter((l) => l && typeof l.label === "string" && typeof l.url === "string" && l.label.trim() && l.url.trim())
+          .map((l) => ({ label: l.label.trim(), url: l.url.trim() }))
+      : [];
+
     // Insert into artists table with pending status
     const result = await db.query(
       `INSERT INTO artists (
         display_name, role, city, state, country, region_id, operates_in, bio,
         link_soundcloud, link_bandcamp, link_twitter, link_instagram, link_website,
+        link_facebook, link_bluesky, link_mastodon, link_twitch, link_linktree,
+        link_patreon, link_youtube, link_discord, links_other,
         discord_handle, status
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'pending')
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,'pending')
       RETURNING id`,
       [
         body.display_name.trim(),
@@ -110,6 +119,15 @@ export const handler = async (event) => {
         body.link_twitter?.trim() || null,
         body.link_instagram?.trim() || null,
         body.link_website?.trim() || null,
+        body.link_facebook?.trim() || null,
+        body.link_bluesky?.trim() || null,
+        body.link_mastodon?.trim() || null,
+        body.link_twitch?.trim() || null,
+        body.link_linktree?.trim() || null,
+        body.link_patreon?.trim() || null,
+        body.link_youtube?.trim() || null,
+        body.link_discord?.trim() || null,
+        linksOther.length > 0 ? JSON.stringify(linksOther) : null,
         body.discord_handle?.trim() || null
       ]
     );

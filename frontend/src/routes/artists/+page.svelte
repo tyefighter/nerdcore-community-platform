@@ -18,6 +18,15 @@
 		link_twitter: string | null;
 		link_instagram: string | null;
 		link_website: string | null;
+		link_facebook: string | null;
+		link_bluesky: string | null;
+		link_mastodon: string | null;
+		link_twitch: string | null;
+		link_linktree: string | null;
+		link_patreon: string | null;
+		link_youtube: string | null;
+		link_discord: string | null;
+		links_other: { label: string; url: string }[] | null;
 		lat: number | null;
 		lng: number | null;
 		tags: string[];
@@ -77,6 +86,36 @@
 	function toggleViewportFilter() {
 		viewportFilterActive = !viewportFilterActive;
 		viewportBounds = viewportFilterActive ? map.getBounds() : null;
+	}
+
+	const LINK_LABELS: Record<string, string> = {
+		soundcloud: 'SoundCloud',
+		bandcamp: 'Bandcamp',
+		twitter: 'Twitter',
+		instagram: 'Instagram',
+		website: 'Website',
+		facebook: 'Facebook',
+		bluesky: 'BlueSky',
+		mastodon: 'Mastodon',
+		twitch: 'Twitch',
+		linktree: 'Linktree',
+		patreon: 'Patreon',
+		youtube: 'YouTube',
+		discord: 'Discord'
+	};
+
+	function getArtistLinks(artist: Artist): { label: string; url: string }[] {
+		const out: { label: string; url: string }[] = [];
+		for (const [key, label] of Object.entries(LINK_LABELS)) {
+			const url = (artist as any)[`link_${key}`] as string | null;
+			if (url) out.push({ label, url });
+		}
+		if (Array.isArray(artist.links_other)) {
+			for (const entry of artist.links_other) {
+				if (entry?.url) out.push({ label: entry.label || 'Link', url: entry.url });
+			}
+		}
+		return out;
 	}
 
 	const GENRE_COLORS: Record<string, string> = {
@@ -222,15 +261,9 @@
 							</div>
 						{/if}
 						<div class="links">
-							{#if selectedArtist.link_soundcloud}
-								<a href={selectedArtist.link_soundcloud} target="_blank">SoundCloud</a>
-							{/if}
-							{#if selectedArtist.link_twitter}
-								<a href={selectedArtist.link_twitter} target="_blank">Twitter</a>
-							{/if}
-							{#if selectedArtist.link_website}
-								<a href={selectedArtist.link_website} target="_blank">Website</a>
-							{/if}
+							{#each getArtistLinks(selectedArtist) as link}
+								<a href={link.url} target="_blank">{link.label}</a>
+							{/each}
 						</div>
 						<div class="mod-links">
 							<a href="/submit/edit?id={selectedArtist.id}">Request edit</a>
