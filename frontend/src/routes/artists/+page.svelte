@@ -119,10 +119,10 @@
 	}
 
 	const GENRE_COLORS: Record<string, string> = {
-		'nerdcore':  '#39ff14',   // neon green
+		'nerdcore':  '#983cba',   // purple
 		'vgm':       '#ff9900',   // orange
 		'chiptune':  '#00f5ff',   // cyan
-		'visualist': '#983cba',   // purple
+		'visualist': '#39ff14',   // neon green
 		'other':     '#ffe566',   // yellow
 	};
 
@@ -561,10 +561,10 @@
 		flex-shrink: 0;
 	}
 
-	.dot.nerdcore  { background: #39ff14; box-shadow: 0 0 4px #39ff14; }
+	.dot.nerdcore  { background: #983cba; box-shadow: 0 0 4px #983cba; }
 	.dot.vgm       { background: #ff9900; box-shadow: 0 0 4px #ff9900; }
 	.dot.chiptune  { background: #00f5ff; box-shadow: 0 0 4px #00f5ff; }
-	.dot.visualist { background: #983cba; box-shadow: 0 0 4px #983cba; }
+	.dot.visualist { background: #39ff14; box-shadow: 0 0 4px #39ff14; }
 	.dot.other     { background: #ffe566; box-shadow: 0 0 4px #ffe566; }
 
 	.legend-item {
