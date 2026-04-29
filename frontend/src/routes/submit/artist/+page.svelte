@@ -12,8 +12,6 @@
 		'International'
 	];
 
-	const ROLES = ['vocalist', 'producer', 'band', 'visualist', 'other'];
-
 	const AVAILABLE_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'other'];
 
 	const COUNTRIES = [
@@ -48,7 +46,6 @@
 	interface LinkEntry { platform: string; url: string; label: string; }
 
 	let display_name = $state('');
-	let selectedRoles: string[] = $state([]);
 	let city = $state('');
 	let state_val = $state('');
 	let country = $state('');
@@ -62,15 +59,7 @@
 	let success = $state(false);
 	let error = $state('');
 
-	function toggleRole(role: string) {
-		if (selectedRoles.includes(role)) {
-			selectedRoles = selectedRoles.filter((r) => r !== role);
-		} else {
-			selectedRoles = [...selectedRoles, role];
-		}
-	}
-
-	function toggleTag(tag: string) {
+function toggleTag(tag: string) {
 		if (selectedTags.includes(tag)) {
 			selectedTags = selectedTags.filter((t) => t !== tag);
 		} else {
@@ -132,7 +121,6 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					display_name,
-					roles: selectedRoles.length > 0 ? selectedRoles : undefined,
 					city,
 					state: state_val,
 					country: country || undefined,
@@ -183,7 +171,7 @@
 			<h2>Submission received</h2>
 			<p>Your artist profile is in the moderation queue. A moderator will review it before it appears publicly.</p>
 			<div class="success-actions">
-				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; selectedRoles = []; city = ''; state_val = ''; country = ''; region = ''; bio = ''; links = [{ platform: '', url: '', label: '' }]; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
+				<a href="/submit/artist" onclick={() => { success = false; display_name = ''; city = ''; state_val = ''; country = ''; region = ''; bio = ''; links = [{ platform: '', url: '', label: '' }]; selectedTags = []; suggested_tag = ''; }}>Submit another</a>
 				<a href="/artists">View artist map</a>
 			</div>
 		</div>
@@ -253,20 +241,6 @@
 						</div>
 					{/each}
 					<button type="button" class="link-add" onclick={addLink}>+ Add another link</button>
-				</div>
-
-				<div class="tag-section">
-					<p class="tag-label">Role <span class="optional">(optional — select all that apply)</span></p>
-					<div class="tags">
-						{#each ROLES as r}
-							<button
-								type="button"
-								class="tag"
-								class:active={selectedRoles.includes(r)}
-								onclick={() => toggleRole(r)}
-							>{r}</button>
-						{/each}
-					</div>
 				</div>
 
 				<div class="tag-section">
