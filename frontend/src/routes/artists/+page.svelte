@@ -126,9 +126,13 @@
 		'other':     '#ffe566',   // yellow
 	};
 
+	// Priority order: more specific subgenres beat the catch-all "nerdcore" so the
+	// map shows real diversity instead of a sea of green.
+	const GENRE_PRIORITY = ['chiptune', 'vgm', 'visualist', 'nerdcore'];
+
 	function getGenreColor(tags: string[]): string {
-		for (const tag of tags) {
-			if (GENRE_COLORS[tag]) return GENRE_COLORS[tag];
+		for (const genre of GENRE_PRIORITY) {
+			if (tags.includes(genre)) return GENRE_COLORS[genre];
 		}
 		return GENRE_COLORS['other'];
 	}
