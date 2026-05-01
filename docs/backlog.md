@@ -95,6 +95,9 @@
 
 ## Improvements & Remaining Work
 
+### Priority 1
+- [ ] **Edit form overhaul** — `frontend/src/routes/submit/edit/+page.svelte` is out of sync with the artist submission form. It still has: the 5 hardcoded social media fields (needs the dropdown UX), no country field (only region), still includes Roles and Tags as they were. Needs to mirror the current artist submission form layout: country dropdown, links via dropdown UX with all platforms + custom "other", no Roles section, current Tags list (nerdcore, chiptune, vgm, visualist, other). Also worth checking the admin-review-submission Lambda's edit field map handles the new social media columns and country correctly.
+
 ### Map / Artists
 - [x] Replace hardcoded city coordinates with Mapbox geocoding API (geocoding runs in admin browser on approval)
 - [x] Add bandcamp and instagram URL fields to artist submission form

@@ -9,13 +9,44 @@
 		'Pacific Northwest', 'Mountain West', 'Mid-Atlantic', 'South', 'Online / No Region'
 	];
 
-	const ARTIST_TAGS = [
-		'nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'producer', 'vocalist', 'duo'
-	];
+	const ARTIST_TAGS = ['nerdcore', 'chiptune', 'vgm', 'visualist', 'other'];
 
 	const EVENT_TAGS = [
 		'nerdcore', 'chiptune', 'vgm', 'visualist', 'hip-hop', 'festival', 'vpc', 'online-event', 'deadline', 'local-show'
 	];
+
+	const COUNTRIES = [
+		'United States', 'United Kingdom', 'Canada', 'Australia', 'New Zealand',
+		'Ireland', 'Germany', 'France', 'Netherlands', 'Sweden', 'Norway', 'Denmark',
+		'Finland', 'Belgium', 'Switzerland', 'Austria', 'Spain', 'Italy', 'Portugal',
+		'Poland', 'Czech Republic', 'Hungary', 'Romania', 'Greece', 'Russia',
+		'Japan', 'South Korea', 'China', 'India', 'Singapore', 'Philippines',
+		'Brazil', 'Mexico', 'Argentina', 'Colombia', 'Chile', 'Peru',
+		'South Africa', 'Nigeria', 'Kenya', 'Egypt',
+		'Israel', 'Turkey', 'UAE', 'Saudi Arabia',
+		'Other'
+	];
+
+	const LINK_PLATFORMS = [
+		{ value: 'soundcloud', label: 'SoundCloud',     placeholder: 'soundcloud.com/yourname' },
+		{ value: 'bandcamp',   label: 'Bandcamp',       placeholder: 'yourname.bandcamp.com' },
+		{ value: 'twitter',    label: 'Twitter / X',    placeholder: 'twitter.com/yourname' },
+		{ value: 'instagram',  label: 'Instagram',      placeholder: 'instagram.com/yourname' },
+		{ value: 'website',    label: 'Website',        placeholder: 'yoursite.com' },
+		{ value: 'facebook',   label: 'Facebook',       placeholder: 'facebook.com/yourpage' },
+		{ value: 'bluesky',    label: 'BlueSky',        placeholder: 'bsky.app/profile/yourname' },
+		{ value: 'mastodon',   label: 'Mastodon',       placeholder: 'mastodon.social/@yourname' },
+		{ value: 'twitch',     label: 'Twitch',         placeholder: 'twitch.tv/yourname' },
+		{ value: 'linktree',   label: 'Linktree',       placeholder: 'linktr.ee/yourname' },
+		{ value: 'patreon',    label: 'Patreon',        placeholder: 'patreon.com/yourname' },
+		{ value: 'youtube',    label: 'YouTube',        placeholder: 'youtube.com/@yourname' },
+		{ value: 'discord',    label: 'Discord',        placeholder: 'discord.gg/yourinvite' },
+		{ value: 'other',      label: 'Other',          placeholder: 'paste your URL here' }
+	];
+
+	const KNOWN_LINK_KEYS = LINK_PLATFORMS.filter(p => p.value !== 'other').map(p => p.value);
+
+	interface LinkEntry { platform: string; url: string; label: string; }
 
 	// Mode: 'artist' or 'event'
 	let mode: 'artist' | 'event' = $state('artist');
@@ -29,16 +60,12 @@
 	// Step 2: artist edit form
 	let artist: any = $state(null);
 	let displayName = $state('');
-	let role = $state('');
 	let city = $state('');
 	let state_ = $state('');
+	let country = $state('');
 	let region = $state('');
 	let bio = $state('');
-	let linkSoundcloud = $state('');
-	let linkBandcamp = $state('');
-	let linkTwitter = $state('');
-	let linkInstagram = $state('');
-	let linkWebsite = $state('');
+	let links: LinkEntry[] = $state([{ platform: '', url: '', label: '' }]);
 	let selectedTags: string[] = $state([]);
 
 	// Step 2: event edit form
@@ -124,16 +151,26 @@
 	function selectArtist(a: any) {
 		artist = a;
 		displayName = a.display_name || '';
-		role = a.role || '';
 		city = a.city || '';
 		state_ = a.state || '';
+		country = a.country || '';
 		region = a.region || '';
 		bio = a.bio || '';
-		linkSoundcloud = a.link_soundcloud || '';
-		linkBandcamp = a.link_bandcamp || '';
-		linkTwitter = a.link_twitter || '';
-		linkInstagram = a.link_instagram || '';
-		linkWebsite = a.link_website || '';
+
+		// Convert the artist's stored link columns + links_other JSONB into LinkEntry rows
+		const entries: LinkEntry[] = [];
+		for (const platform of KNOWN_LINK_KEYS) {
+			const url = a[`link_${platform}`];
+			if (url) entries.push({ platform, url, label: '' });
+		}
+		if (Array.isArray(a.links_other)) {
+			for (const entry of a.links_other) {
+				if (entry?.url) entries.push({ platform: 'other', url: entry.url, label: entry.label || '' });
+			}
+		}
+		if (entries.length === 0) entries.push({ platform: '', url: '', label: '' });
+		links = entries;
+
 		selectedTags = a.tags ? [...a.tags] : [];
 		searchResults = [];
 	}
@@ -171,6 +208,69 @@
 		}
 	}
 
+	function normalizeUrl(url: string): string | undefined {
+		const trimmed = url.trim();
+		if (!trimmed) return undefined;
+		if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+		return `https://${trimmed}`;
+	}
+
+	function addLink() {
+		links = [...links, { platform: '', url: '', label: '' }];
+	}
+
+	function removeLink(idx: number) {
+		links = links.filter((_, i) => i !== idx);
+		if (links.length === 0) addLink();
+	}
+
+	function platformTaken(platform: string, currentIdx: number): boolean {
+		if (!platform || platform === 'other') return false;
+		return links.some((l, i) => i !== currentIdx && l.platform === platform);
+	}
+
+	// Snapshot all the link fields the form is currently producing.
+	function currentLinkState() {
+		const knownLinks: Record<string, string | null> = {};
+		for (const key of KNOWN_LINK_KEYS) knownLinks[key] = null;
+		const others: { label: string; url: string }[] = [];
+		for (const entry of links) {
+			const url = normalizeUrl(entry.url);
+			if (!url || !entry.platform) continue;
+			if (entry.platform === 'other') {
+				const label = entry.label.trim();
+				if (label) others.push({ label, url });
+			} else {
+				knownLinks[entry.platform] = url;
+			}
+		}
+		return { knownLinks, others };
+	}
+
+	// Diff current link state against the loaded artist; only return changed fields.
+	function buildLinkChanges(original: any) {
+		const changes: Record<string, any> = {};
+		const { knownLinks, others } = currentLinkState();
+
+		for (const key of KNOWN_LINK_KEYS) {
+			const newVal = knownLinks[key];
+			const oldVal = original[`link_${key}`] || null;
+			if (newVal !== oldVal) {
+				changes[`link_${key}`] = newVal;
+			}
+		}
+
+		const oldOthers = Array.isArray(original.links_other) ? original.links_other : [];
+		const sortKey = (a: { label: string; url: string }) => `${a.label}::${a.url}`;
+		const newSorted = [...others].sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+		const oldSorted = [...oldOthers].sort((a: any, b: any) => sortKey(a).localeCompare(sortKey(b)));
+		if (JSON.stringify(newSorted) !== JSON.stringify(oldSorted)) {
+			changes.links_other = others;
+		}
+
+		return changes;
+	}
+
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		submitting = true;
@@ -198,16 +298,12 @@
 			} else if (mode === 'artist' && artist) {
 				payload.artist_id = artist.id;
 				if (displayName.trim() !== (artist.display_name || '')) payload.display_name = displayName.trim();
-				if (role !== (artist.role || '')) payload.role = role;
 				if (city.trim() !== (artist.city || '')) payload.city = city.trim();
 				if (state_.trim() !== (artist.state || '')) payload.state = state_.trim();
+				if (country !== (artist.country || '')) payload.country = country;
 				if (region !== (artist.region || '')) payload.region = region;
 				if (bio.trim() !== (artist.bio || '')) payload.bio = bio.trim();
-				if (linkSoundcloud.trim() !== (artist.link_soundcloud || '')) payload.link_soundcloud = linkSoundcloud.trim();
-				if (linkBandcamp.trim() !== (artist.link_bandcamp || '')) payload.link_bandcamp = linkBandcamp.trim();
-				if (linkTwitter.trim() !== (artist.link_twitter || '')) payload.link_twitter = linkTwitter.trim();
-				if (linkInstagram.trim() !== (artist.link_instagram || '')) payload.link_instagram = linkInstagram.trim();
-				if (linkWebsite.trim() !== (artist.link_website || '')) payload.link_website = linkWebsite.trim();
+				Object.assign(payload, buildLinkChanges(artist));
 				const origTags = (artist.tags || []).slice().sort().join(',');
 				const newTags = selectedTags.slice().sort().join(',');
 				if (origTags !== newTags) payload.tags = selectedTags;
@@ -403,27 +499,25 @@
 				<input id="display_name" type="text" bind:value={displayName} />
 			</div>
 
-			<div class="field">
-				<label>Role</label>
-				<div class="radio-group">
-					{#each ['vocalist', 'producer', 'both'] as r}
-						<label class="radio">
-							<input type="radio" bind:group={role} value={r} />
-							{r}
-						</label>
-					{/each}
-				</div>
-			</div>
-
 			<div class="field-row">
 				<div class="field">
 					<label for="city">City</label>
 					<input id="city" type="text" bind:value={city} placeholder="Optional" />
 				</div>
 				<div class="field">
-					<label for="state">State / Province</label>
+					<label for="state">State / Province / Region</label>
 					<input id="state" type="text" bind:value={state_} placeholder="Optional" />
 				</div>
+			</div>
+
+			<div class="field">
+				<label for="country">Country</label>
+				<select id="country" bind:value={country}>
+					<option value="">— Select a country (optional) —</option>
+					{#each COUNTRIES as c}
+						<option value={c}>{c}</option>
+					{/each}
+				</select>
 			</div>
 
 			<div class="field">
@@ -457,12 +551,28 @@
 
 			<div class="field">
 				<label>Links</label>
-				<div class="links-group">
-					<input type="url" bind:value={linkSoundcloud} placeholder="SoundCloud URL" />
-					<input type="url" bind:value={linkBandcamp} placeholder="Bandcamp URL" />
-					<input type="url" bind:value={linkTwitter} placeholder="Twitter / X URL" />
-					<input type="url" bind:value={linkInstagram} placeholder="Instagram URL" />
-					<input type="url" bind:value={linkWebsite} placeholder="Website URL" />
+				<div class="links-section">
+					{#each links as entry, idx}
+						<div class="link-row">
+							<select bind:value={entry.platform} class="link-platform">
+								<option value="">— pick a platform —</option>
+								{#each LINK_PLATFORMS as p}
+									<option value={p.value} disabled={platformTaken(p.value, idx)}>{p.label}</option>
+								{/each}
+							</select>
+							{#if entry.platform === 'other'}
+								<input type="text" bind:value={entry.label} class="link-label" placeholder="Label (e.g. YouTube, Patreon)" maxlength={50} />
+							{/if}
+							<input
+								type="text"
+								bind:value={entry.url}
+								class="link-url"
+								placeholder={LINK_PLATFORMS.find((p) => p.value === entry.platform)?.placeholder ?? 'URL'}
+							/>
+							<button type="button" class="link-remove" onclick={() => removeLink(idx)} aria-label="Remove link">✕</button>
+						</div>
+					{/each}
+					<button type="button" class="link-add" onclick={addLink}>+ Add another link</button>
 				</div>
 			</div>
 
@@ -705,6 +815,85 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.links-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.link-row {
+		display: grid;
+		grid-template-columns: 140px 1fr auto;
+		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.link-row:has(.link-label) {
+		grid-template-columns: 140px 160px 1fr auto;
+	}
+
+	.link-platform,
+	.link-label,
+	.link-url {
+		font-size: 0.85rem;
+		padding: 0.5rem 0.6rem;
+	}
+
+	.link-remove {
+		background: none;
+		border: 1px solid #2a2a2a;
+		color: #666;
+		font-family: inherit;
+		font-size: 0.8rem;
+		padding: 0.4rem 0.65rem;
+		border-radius: 4px;
+		cursor: pointer;
+		width: auto;
+	}
+
+	.link-remove:hover {
+		border-color: #ff006e;
+		color: #ff006e;
+	}
+
+	.link-add {
+		background: none;
+		border: 1px dashed #2a2a2a;
+		color: #888;
+		font-family: inherit;
+		font-size: 0.8rem;
+		padding: 0.55rem;
+		border-radius: 4px;
+		cursor: pointer;
+		align-self: flex-start;
+		margin-top: 0.25rem;
+		width: auto;
+	}
+
+	.link-add:hover {
+		border-color: #983cba;
+		color: #983cba;
+	}
+
+	@media (max-width: 600px) {
+		.link-row {
+			grid-template-columns: 1fr auto;
+		}
+		.link-row:has(.link-label) {
+			grid-template-columns: 1fr auto;
+		}
+		.link-platform, .link-label, .link-url {
+			grid-column: 1 / -1;
+		}
+		.link-remove {
+			grid-column: 2;
+			grid-row: 1;
+		}
+		.link-platform {
+			grid-column: 1;
+		}
 	}
 
 	button[type="submit"] {

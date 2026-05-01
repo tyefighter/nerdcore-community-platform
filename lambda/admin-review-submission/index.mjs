@@ -177,7 +177,12 @@ export const handler = async (event) => {
             country: "country", bio: "bio", operates_in: "operates_in",
             link_soundcloud: "link_soundcloud", link_bandcamp: "link_bandcamp",
             link_twitter: "link_twitter", link_instagram: "link_instagram",
-            link_website: "link_website", discord_handle: "discord_handle"
+            link_website: "link_website", link_facebook: "link_facebook",
+            link_bluesky: "link_bluesky", link_mastodon: "link_mastodon",
+            link_twitch: "link_twitch", link_linktree: "link_linktree",
+            link_patreon: "link_patreon", link_youtube: "link_youtube",
+            link_discord: "link_discord", links_other: "links_other",
+            discord_handle: "discord_handle"
           };
           const setClauses = [];
           const values = [];
@@ -185,7 +190,12 @@ export const handler = async (event) => {
           for (const [field, col] of Object.entries(fieldMap)) {
             if (data[field] !== undefined) {
               setClauses.push(`${col} = $${idx}`);
-              values.push(data[field]);
+              // links_other is a JSONB column — serialize arrays to JSON for the driver.
+              if (field === "links_other") {
+                values.push(Array.isArray(data[field]) && data[field].length > 0 ? JSON.stringify(data[field]) : null);
+              } else {
+                values.push(data[field]);
+              }
               idx++;
             }
           }

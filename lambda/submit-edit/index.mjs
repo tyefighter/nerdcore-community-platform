@@ -47,9 +47,12 @@ export const handler = async (event) => {
 
     // Require at least one field to change
     const artistEditableFields = [
-      "display_name", "role", "city", "state", "region_id", "operates_in",
+      "display_name", "role", "city", "state", "country", "region_id", "operates_in",
       "bio", "link_soundcloud", "link_bandcamp", "link_twitter",
-      "link_instagram", "link_website", "discord_handle", "tags"
+      "link_instagram", "link_website", "link_facebook", "link_bluesky",
+      "link_mastodon", "link_twitch", "link_linktree", "link_patreon",
+      "link_youtube", "link_discord", "links_other",
+      "discord_handle", "tags"
     ];
     const eventEditableFields = [
       "title", "description", "venue", "address", "city", "state",
